@@ -1,11 +1,12 @@
+# Source: osmnx.elevation - modified to use a different API
+
 import math
 import networkx as nx
 import pandas as pd
 import requests
-import time
 
 
-def add_node_elevations(G, max_loc_per_batch=1000, pause_duration=0.0): # pragma: no cover
+def add_node_elevations(G, max_loc_per_batch=1000, pause_duration=0.0):  # pragma: no cover
     """
     Get the elevation (meters) of each node in the network and add it to the
     node as an attribute.
@@ -25,9 +26,7 @@ def add_node_elevations(G, max_loc_per_batch=1000, pause_duration=0.0): # pragma
     G : networkx multidigraph
     """
 
-    # google maps elevation API endpoint
-    url_template = 'https://api.open-elevation.com/api/v1/lookup?locations={}'
-    # opentopdata
+    # Dockerized open-elevation for elevation data and hosted on our own machine
     url_template = 'http://0.0.0.0:8080/api/v1/lookup'
 
     # make a pandas series of all the nodes' coordinates as 'lat,lng'
