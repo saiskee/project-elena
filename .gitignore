@@ -135,3 +135,5 @@ dist
 .pnp.js
 
 *.pyc
+
+__pycache__/
