@@ -7,15 +7,16 @@ import strategies
 
 app = Flask(__name__)
 
+mode = "drive" # "drive", "walk", "cycle"
 # Load Cached Graphs from Memory
 print("Loading Graphs")
-infile = open("./data/cached_graphs/amherst_graph_no_elevation_drive.pkl", 'rb')
+infile = open("./data/amherst_graph_no_elevation_drive.pkl", 'rb')
 amherst_graph = pkl.load(infile)
 
 infile = open("./data/amherst_graph_elevation_drive_projected.pkl", 'rb')
 amherst_projected = pkl.load(infile)
 g_nodes = ox.graph_to_gdfs(amherst_graph, edges=False)
-
+print("Cached Graphs Loaded!")
 
 @app.route('/route', methods=['POST'])
 def route():
@@ -29,20 +30,25 @@ def route():
 	}
 	"""
     data = json.loads(request.data)
-    start_node = ox.get_nearest_node(data.start)
-    dest_node = ox.get_nearest_node(data.destination)
+    # Get Lat Long of Address from Nominatim Geocoding API
+    start_latlng = ox.geocode(data.start)
+    dest_latlng = ox.geocode(data.destination)
+
+    start_node = ox.get_nearest_node(amherst_graph, start_latlng)
+    dest_node = ox.get_nearest_node(amherst_graph, dest_latlng)
+    
     algorithm = data.algorithm
 
-    return get_route(start_node, end_node, algorithm)
+    return get_route(start_node, dest_node, algorithm)
 
 def get_route(start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0)):
 
     if algorithm == 'astar':
         context = Context(strategies.StrategyAStar(amherst_graph, amherst_projected, g_nodes))
-        path = context.run_strategy_route(start_node, end_node)
+        path = context.run_strategy_route(start_node, dest_node)
     if algorithm == 'ucs':
         context.strategy = strategies.StrategyUCS(amherst_graph, amherst_projected, g_nodes)
-        path = context.run_strategy_route(start_node, end_node)
+        path = context.run_strategy_route(start_node, dest_node)
 
     path = [[lng, lat] for [lat, lng] in path]
     return { path: path, name: name, color: color }
