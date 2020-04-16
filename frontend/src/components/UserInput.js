@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import Spinner from "react-bootstrap/Spinner";
 
 
 export default class UserInput extends Component {
@@ -14,6 +15,7 @@ export default class UserInput extends Component {
 		goal: "Minimize Elevation Gain",
 		limit: "0",
 		algorithm: "Uniform Cost Search",
+		loading: false
 	};
 
 	handleChange = (e) => {
@@ -25,6 +27,7 @@ export default class UserInput extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		console.log(this.state);
+		this.setState({ loading: true })
 		const resp = {
 			path: [
 				[-71.1188219, 42.373674],
@@ -79,7 +82,7 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		};
-		// this.props.updateData(resp);
+		// this.props.updateData(resp); 
 		fetch('/route',{
 			method: 'POST',
 			body: JSON.stringify(this.state)
@@ -88,6 +91,7 @@ export default class UserInput extends Component {
 			let data = await res.json();
 			console.log(data);
 			this.props.updateData(data);
+			this.setState({ loading: false })
 		})
 		.catch(err => {
 			console.log(err);
@@ -199,7 +203,9 @@ export default class UserInput extends Component {
 
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
-							Submit
+							{this.state.loading ? <Spinner animation="border" /> : "Submit"}
+							{/* <Spinner animation="border" /> */}
+							
 						</Button>
 					</Form.Row>
 				</Form>

@@ -15,9 +15,9 @@ class App extends Component {
 		this.state = {
 			data: [],
 			viewport: {
-				latitude: 30.22,
-				longitude: -60.13,
-				zoom: 1.3,
+				latitude: 42.20515744581611,
+				longitude: -72.19204888633023,
+				zoom: 7.5,
 				bearing: 0,
 				pitch: 0,
 			},
@@ -38,9 +38,11 @@ class App extends Component {
 		const coordinates = d.path[len];
 		let viewport = this.state.viewport;
 
+		let zoom = this.calculateZoom(d.path);
+
 		viewport["latitude"] = coordinates[1];
 		viewport["longitude"] = coordinates[0];
-		viewport["zoom"] = 12.5;
+		viewport["zoom"] = zoom;
 		viewport["transitionDuration"] = 5000;
 		viewport["transitionInterpolator"] = new FlyToInterpolator();
 
@@ -63,6 +65,46 @@ class App extends Component {
 			this.setState({ height: "100vh", marginTop: "0vh" });
 		}
 	};
+
+	calculateZoom = (path) => {
+		let start = path[0]
+		let end = path[path.length - 1]
+
+		let dist = this.haversine(start[1], start[0], end[1], end[0]);
+
+		console.log(dist);
+
+		if(dist <= 1500) {
+			return 14.5;
+		}
+		if(dist <= 5000) {
+			return 13;
+		}
+		if(dist <= 15000) {
+			return 12;
+		}
+		
+		return 10;
+	}
+
+
+
+	haversine = (lat1, lon1, lat2, lon2) => {
+		let R = 6371e3; // metres
+		let φ1 = lat1 * Math.PI / 180;
+		let φ2 = lat2 * Math.PI / 180;
+		let Δφ = (lat2-lat1) * Math.PI / 180;
+		let Δλ = (lon2-lon1) * Math.PI / 180;
+
+		let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+				Math.cos(φ1) * Math.cos(φ2) *
+				Math.sin(Δλ/2) * Math.sin(Δλ/2);
+		let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+		let d = R * c;
+
+		return d
+	}
 
 	render() {
 		return (

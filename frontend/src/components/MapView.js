@@ -11,7 +11,6 @@ const MAPBOX_TOKEN =
 // const data =
 
 export default class MapView extends React.Component {
-
 	render() {
 		const data = this.props.data;
 
@@ -21,33 +20,59 @@ export default class MapView extends React.Component {
 			pickable: true,
 			widthScale: 5,
 			widthMinPixels: 2,
-			getColor: [255, 255, 255]
+			getColor: [255, 255, 255],
 		});
 
-		// const iconTest =  [
-		// 		{name: 'Colma (COLM)', address: '365 D Street, Colma CA 94014', exits: 4214, coordinates: [-122.466233, 37.684638]},
-		// 	]
+		const startPinData = [
+			{
+				name: "Colma (COLM)",
+				address: "365 D Street, Colma CA 94014",
+				exits: 4214,
+				coordinates: [42.20515744581611, -72.19204888633023],
+			},
+		];
 
-		// const iconLayer = new IconLayer({
-		// 	id: 'icon-layer',
-		// 	data,
-		// 	pickable: true,
-		// })
+		const ICON_MAPPING = {
+			marker: {x: 0, y: 0, width: 32, height: 32, mask: true}
+		  };
+
+		const startPin = new IconLayer({
+			id: "icon-layer",
+			startPinData,
+			pickable: true,
+			// iconAtlas and iconMapping are required
+			// getIcon: return a string
+			getIcon: d => ({
+				url: "https://img.icons8.com/color/50/000000/map-pin.png",
+				width: 128,
+				height: 128,
+				anchorY: 128
+			  }),
+		
+			getIcon: d => 'marker',
+
+			sizeScale: 15,
+			getPosition: d => d.coordinates,
+			getSize: d => 5,
+			getColor: d => [Math.sqrt(d.exits), 140, 0],
+		});
 
 		let style = {
-			top: "auto", left: "auto", zIndex: "0",
-			marginTop: this.props.marginTop
-		}
+			top: "auto",
+			left: "auto",
+			zIndex: "0",
+			marginTop: this.props.marginTop,
+		};
 
 		return (
 			<DeckGL
 				// initialViewState={this.props.viewport}
 				viewState={this.props.viewport}
-				onViewStateChange={v => {
-					this.props._onViewStateChange(v)
+				onViewStateChange={(v) => {
+					this.props._onViewStateChange(v);
 				}}
 				controller={true}
-				layers={path}
+				layers={ [path, startPin] }
 				width={this.props.width}
 				height={this.props.height}
 				style={style}
@@ -56,7 +81,6 @@ export default class MapView extends React.Component {
 					mapStyle="mapbox://styles/mapbox/dark-v10"
 					onViewportChange={(viewport) => this.setState({ viewport })}
 					mapboxApiAccessToken={MAPBOX_TOKEN}
-					
 				/>
 			</DeckGL>
 		);
