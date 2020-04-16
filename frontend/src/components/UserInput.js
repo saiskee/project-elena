@@ -82,16 +82,31 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		}
-		// this.props.updateData(resp)
+		this.props.updateData(resp)
+		
+		fetch('/route',{
+			method: 'POST',
+			body: JSON.stringify(this.state)
+		})
+		.then(async res => {
+			let data = await res.json();
+			console.log(data);
+			this.props.updateData(data);
+		})
+		.catch(err => {
+			console.log(err);
+		})
 
-		axios
-			.get("http://localhost:8000/", this.state)
-			.then(res => {
-				this.props.updateData(res)
-			})
-			.catch(err => {
-				console.log(err);
-			});
+
+		// axios
+		// 	.post("/route", this.state)
+		// 	.then(res => {
+		// 		console.log(res);
+		// 		// this.props.updateData(res)
+		// 	})
+		// 	.catch(err => {
+		// 		console.log(err);
+		// 	});
 	}
 
 	render() {
