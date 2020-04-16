@@ -21,12 +21,12 @@ export default class UserInput extends Component {
 
 	handleChange = (e) => {
 		this.setState({
-			[e.target.id]: e.target.value
+			[e.target.id]: e.target.value,
 		});
 	};
 
 	handleSubmit = (e) => {
-		e.preventDefault()
+		e.preventDefault();
 		console.log(this.state);
 		const resp = {
 			path: [
@@ -81,37 +81,33 @@ export default class UserInput extends Component {
 			],
 			name: "Route 1",
 			color: [255, 255, 255],
-		}
-		// this.props.updateData(resp)
+		};
+		this.props.updateData(resp);
 
 		axios
 			.get("http://localhost:8000/", this.state)
-			.then(res => {
-				this.props.updateData(res)
+			.then((res) => {
+				this.props.updateData(res);
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.log(err);
 			});
-	}
+	};
 
 	render() {
 		return (
 			<div style={height}>
-				<Navbar bg="dark" variant="dark">
-					<Container>
-						<Navbar.Brand href="#home">
-							EleNa: Elevation-based Navigation
-						</Navbar.Brand>
-					</Container>
-				</Navbar>
 				<Container>
 					<div style={margin}>
 						<Row>
 							<Col>
-								<Card body>
-									<Form onSubmit={e => {
-										this.handleSubmit(e);
-									}}>
+								<Card body style={{width:"20vw", background: "rgba(255, 255, 255, 0.1)", color: "#ffffff"}}>
+									<Form
+										onSubmit={(e) => {
+											this.handleSubmit(e);
+										}}
+										style={left}
+									>
 										<Form.Row>
 											<Form.Group
 												as={Col}
@@ -129,7 +125,9 @@ export default class UserInput extends Component {
 													}}
 												/>
 											</Form.Group>
+										</Form.Row>
 
+										<Form.Row>
 											<Form.Group
 												as={Col}
 												controlId="dest"
@@ -172,7 +170,9 @@ export default class UserInput extends Component {
 													</option>
 												</Form.Control>
 											</Form.Group>
+										</Form.Row>
 
+										<Form.Row>
 											<Form.Group
 												as={Col}
 												controlId="goal"
@@ -195,7 +195,9 @@ export default class UserInput extends Component {
 													</option>
 												</Form.Control>
 											</Form.Group>
+										</Form.Row>
 
+										<Form.Row>
 											<Form.Group
 												as={Col}
 												controlId="limit"
@@ -216,7 +218,7 @@ export default class UserInput extends Component {
 
 										<Form.Row className="justify-content-md-center">
 											<Button
-												variant="primary"
+												variant="light"
 												type="submit"
 											>
 												Submit
@@ -241,4 +243,8 @@ const height = {
 const margin = {
 	marginTop: "15px",
 	marginBottom: "15px",
+};
+
+const left = {
+	textAlign: "left",
 };
