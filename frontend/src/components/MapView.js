@@ -11,20 +11,6 @@ const MAPBOX_TOKEN =
 // const data =
 
 export default class MapView extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			data: this.props.data,
-			viewport: this.props.viewport,
-		};
-		this._onViewStateChange = this._onViewStateChange.bind(this);
-	}
-
-	_onViewStateChange({ viewState }) {
-		this.setState({ viewport: viewState });
-	}
-
-	
 
 	render() {
 		const data = this.props.data;
@@ -40,12 +26,14 @@ export default class MapView extends React.Component {
 		return (
 			<DeckGL
 				// initialViewState={this.props.viewport}
-				viewState={this.state.viewport}
-				onViewStateChange={this._onViewStateChange}
+				viewState={this.props.viewport}
+				onViewStateChange={v => {
+					this.props._onViewStateChange(v)
+				}}
 				controller={true}
 				layers={layer}
 				width="60vw"
-				height="65vh"
+				height={this.props.height}
 				style={{ top: "auto", left: "auto", zIndex: "0", marginBottom: "3em" }}
 			>
 				<StaticMap
