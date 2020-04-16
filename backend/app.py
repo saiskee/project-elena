@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import json
 import osmnx as ox
 import networkx as nx
@@ -18,6 +18,10 @@ infile = open("./data/amherst_graph_elevation_drive_projected.pkl", 'rb')
 amherst_projected = pkl.load(infile)
 g_nodes = ox.graph_to_gdfs(amherst_graph, edges=False)
 print("Cached Graphs Loaded!")
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template("index.html", token="Hello elena")
 
 @app.route('/route', methods=['POST'])
 def route():

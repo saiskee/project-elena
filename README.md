@@ -1,3 +1,11 @@
-In the `frontend` folder, please run `yarn start`
+# Project Elena
 
-To start the backend, please run `flask run`
+## To run frontend + backend in production
+```
+	cd backend
+	flask run
+```
+
+<i>
+	Note: You must install all flask dependencies before.
+</i>
