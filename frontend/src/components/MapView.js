@@ -1,6 +1,6 @@
 import React from "react";
 import DeckGL from "@deck.gl/react";
-import { PathLayer } from "@deck.gl/layers";
+import { PathLayer, IconLayer } from "@deck.gl/layers";
 import { StaticMap } from "react-map-gl";
 
 // Set your mapbox access token here
@@ -15,13 +15,29 @@ export default class MapView extends React.Component {
 	render() {
 		const data = this.props.data;
 
-		const layer = new PathLayer({
+		const path = new PathLayer({
 			id: "path-layer",
 			data,
 			pickable: true,
 			widthScale: 5,
 			widthMinPixels: 2,
+			getColor: [255, 255, 255]
 		});
+
+		// const iconTest =  [
+		// 		{name: 'Colma (COLM)', address: '365 D Street, Colma CA 94014', exits: 4214, coordinates: [-122.466233, 37.684638]},
+		// 	]
+
+		// const iconLayer = new IconLayer({
+		// 	id: 'icon-layer',
+		// 	data,
+		// 	pickable: true,
+		// })
+
+		let style = {
+			top: "auto", left: "auto", zIndex: "0",
+			marginTop: this.props.marginTop
+		}
 
 		return (
 			<DeckGL
@@ -31,13 +47,13 @@ export default class MapView extends React.Component {
 					this.props._onViewStateChange(v)
 				}}
 				controller={true}
-				layers={layer}
-				width="60vw"
+				layers={path}
+				width={this.props.width}
 				height={this.props.height}
-				style={{ top: "auto", left: "auto", zIndex: "0", marginBottom: "3em" }}
+				style={style}
 			>
 				<StaticMap
-					mapStyle="mapbox://styles/mapbox/outdoors-v11"
+					mapStyle="mapbox://styles/mapbox/dark-v10"
 					onViewportChange={(viewport) => this.setState({ viewport })}
 					mapboxApiAccessToken={MAPBOX_TOKEN}
 					

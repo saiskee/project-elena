@@ -1,14 +1,11 @@
+  
 import React, { Component } from "react";
 
-import Navbar from "react-bootstrap/Navbar";
-import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 
-import axios from "axios";
 
 export default class UserInput extends Component {
 	state = {
@@ -21,14 +18,14 @@ export default class UserInput extends Component {
 
 	handleChange = (e) => {
 		this.setState({
-			[e.target.id]: e.target.value
+			[e.target.id]: e.target.value,
 		});
 	};
 
 	handleSubmit = (e) => {
-		e.preventDefault()
+		e.preventDefault();
 		console.log(this.state);
-		/*const resp = {
+		const resp = {
 			path: [
 				[-71.1188219, 42.373674],
 				[-71.1185058, 42.3733081],
@@ -81,9 +78,8 @@ export default class UserInput extends Component {
 			],
 			name: "Route 1",
 			color: [255, 255, 255],
-		}
-		this.props.updateData(resp)
-		*/
+		};
+		// this.props.updateData(resp);
 		fetch('/route',{
 			method: 'POST',
 			body: JSON.stringify(this.state)
@@ -111,149 +107,103 @@ export default class UserInput extends Component {
 
 	render() {
 		return (
-			<div style={height}>
-				<Navbar bg="dark" variant="dark">
-					<Container>
-						<Navbar.Brand href="#home">
-							EleNa: Elevation-based Navigation
-						</Navbar.Brand>
-					</Container>
-				</Navbar>
-				<Container>
-					<div style={margin}>
-						<Row>
-							<Col>
-								<Card body>
-									<Form onSubmit={e => {
-										this.handleSubmit(e);
-									}}>
-										<Form.Row>
-											<Form.Group
-												as={Col}
-												controlId="start"
-											>
-												<Form.Label>
-													Start Location
-												</Form.Label>
-												<Form.Control
-													type="text"
-													placeholder="Enter start location"
-													value={this.state.start}
-													onChange={(e) => {
-														this.handleChange(e);
-													}}
-												/>
-											</Form.Group>
+			<Card
+				body
+				style={{
+					width: "400px",
+					background: "rgba(0, 0, 0, 0.5)",
+					color: "#ffffff",
+					marginTop: "5%",
+					marginLeft: "5%"
+				}}
+			>
+				<Form
+					onSubmit={(e) => {
+						this.handleSubmit(e);
+					}}
+				>
+					<Form.Row>
+						<Form.Group as={Col} controlId="start">
+							<Form.Label>Start Location</Form.Label>
+							<Form.Control
+								type="text"
+								placeholder="Enter start location"
+								value={this.state.start}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							/>
+						</Form.Group>
+					</Form.Row>
 
-											<Form.Group
-												as={Col}
-												controlId="dest"
-											>
-												<Form.Label>
-													End Location
-												</Form.Label>
-												<Form.Control
-													type="text"
-													placeholder="Enter end location"
-													value={this.state.dest}
-													onChange={(e) => {
-														this.handleChange(e);
-													}}
-												/>
-											</Form.Group>
-										</Form.Row>
+					<Form.Row>
+						<Form.Group as={Col} controlId="dest">
+							<Form.Label>End Location</Form.Label>
+							<Form.Control
+								type="text"
+								placeholder="Enter end location"
+								value={this.state.dest}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							/>
+						</Form.Group>
+					</Form.Row>
 
-										<Form.Row>
-											<Form.Group
-												as={Col}
-												controlId="algorithm"
-											>
-												<Form.Label>
-													Algorithm
-												</Form.Label>
-												<Form.Control
-													as="select"
-													value={this.state.algorithm}
-													onChange={(e) => {
-														this.handleChange(e);
-													}}
-												>
-													<option>
-														Uniform Cost Search
-													</option>
-													<option>A Star</option>
-													<option>
-														Breadth First Search
-													</option>
-												</Form.Control>
-											</Form.Group>
+					<Form.Row>
+						<Form.Group as={Col} controlId="algorithm">
+							<Form.Label>Algorithm</Form.Label>
+							<Form.Control
+								as="select"
+								value={this.state.algorithm}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							>
+								<option>Uniform Cost Search</option>
+								<option>A Star</option>
+								<option>Breadth First Search</option>
+							</Form.Control>
+						</Form.Group>
+					</Form.Row>
 
-											<Form.Group
-												as={Col}
-												controlId="goal"
-											>
-												<Form.Label>
-													Optimization
-												</Form.Label>
-												<Form.Control
-													as="select"
-													value={this.state.goal}
-													onChange={(e) => {
-														this.handleChange(e);
-													}}
-												>
-													<option>
-														Minimize Elevation Gain
-													</option>
-													<option>
-														Maximize Elevation Gain
-													</option>
-												</Form.Control>
-											</Form.Group>
+					<Form.Row>
+						<Form.Group as={Col} controlId="goal">
+							<Form.Label>Optimization</Form.Label>
+							<Form.Control
+								as="select"
+								value={this.state.goal}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							>
+								<option>Minimize Elevation Gain</option>
+								<option>Maximize Elevation Gain</option>
+							</Form.Control>
+						</Form.Group>
+					</Form.Row>
 
-											<Form.Group
-												as={Col}
-												controlId="limit"
-											>
-												<Form.Label>
-													Deviation Limit (x%)
-												</Form.Label>
-												<Form.Control
-													type="number"
-													placeholder="x%"
-													value={this.state.limit}
-													onChange={(e) => {
-														this.handleChange(e);
-													}}
-												/>
-											</Form.Group>
-										</Form.Row>
+					<Form.Row>
+						<Form.Group as={Col} controlId="limit">
+							<Form.Label>Deviation Limit (x%)</Form.Label>
+							<Form.Control
+								type="number"
+								placeholder="x%"
+								value={this.state.limit}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							/>
+						</Form.Group>
+					</Form.Row>
 
-										<Form.Row className="justify-content-md-center">
-											<Button
-												variant="primary"
-												type="submit"
-											>
-												Submit
-											</Button>
-										</Form.Row>
-									</Form>
-								</Card>
-							</Col>
-						</Row>
-					</div>
-				</Container>
-			</div>
+					<Form.Row className="justify-content-md-center">
+						<Button variant="light" type="submit">
+							Submit
+						</Button>
+					</Form.Row>
+				</Form>
+			</Card>
 		);
 	}
 }
-
-const height = {
-	// height: "25vh",
-	marginBottom: "30px",
-};
-
-const margin = {
-	marginTop: "15px",
-	marginBottom: "15px",
-};
