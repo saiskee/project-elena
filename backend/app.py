@@ -1,6 +1,7 @@
 from flask import Flask, request
 import json
 import osmnx as ox
+import networkx as nx
 import pickle as pkl
 from context import Context
 import strategies
@@ -23,35 +24,38 @@ def route():
     """
 	request.data: {
 		start: "Start Addres Lane"
-		destination: "Dest"
+		dest: "Dest"
 		goal: "Max/ Min"
 		limit: "##"
 		algorithm: "ucs/astar/bfs/..."
 	}
 	"""
     data = json.loads(request.data)
+    print(data)
     # Get Lat Long of Address from Nominatim Geocoding API
-    start_latlng = ox.geocode(data.start)
-    dest_latlng = ox.geocode(data.destination)
+    start_latlng = ox.geocode(data['start'])
+    dest_latlng = ox.geocode(data['dest'])
 
     start_node = ox.get_nearest_node(amherst_graph, start_latlng)
     dest_node = ox.get_nearest_node(amherst_graph, dest_latlng)
     
-    algorithm = data.algorithm
+    algorithm = data['algorithm']
 
     return get_route(start_node, dest_node, algorithm)
 
 def get_route(start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0)):
 
-    if algorithm == 'astar':
+    if algorithm == 'A Star':
         context = Context(strategies.StrategyAStar(amherst_graph, amherst_projected, g_nodes))
         path = context.run_strategy_route(start_node, dest_node)
-    if algorithm == 'ucs':
-        context.strategy = strategies.StrategyUCS(amherst_graph, amherst_projected, g_nodes)
+    if algorithm == 'Uniform Cost Search':
+        context = Context(strategies.StrategyUCS(amherst_graph, amherst_projected, g_nodes))
         path = context.run_strategy_route(start_node, dest_node)
-
-    path = [[lng, lat] for [lat, lng] in path]
-    return { path: path, name: name, color: color }
+    if algorithm == 'Breadth First Search':
+        path = nx.shortest_path(amherst_graph, start_node, dest_node)
+    print(path)
+    path = [[amherst_graph.nodes[nodeId]['x'], amherst_graph.nodes[nodeId]['y']] for nodeId in path]
+    return { 'path': path, 'name': name, 'color': color }
     
     
 

@@ -8,9 +8,6 @@ import { FlyToInterpolator } from "@deck.gl/core";
 
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 class App extends Component {
 	constructor(props) {
@@ -18,15 +15,15 @@ class App extends Component {
 		this.state = {
 			data: [],
 			viewport: {
-				latitude: 39.537849,
-				longitude: 6.682261,
+				latitude: 30.22,
+				longitude: -60.13,
 				zoom: 1.3,
 				bearing: 0,
 				pitch: 0,
 			},
-			height: "92vh",
-			width: "66.6666vw",
-			colWid: 4,
+			height: "99vh",
+			width: "100vw",
+			marginTop: "1vh"
 		};
 		this._onViewStateChange = this._onViewStateChange.bind(this);
 	}
@@ -59,85 +56,65 @@ class App extends Component {
 	}
 
 	updateHeight = () => {
-		this.setState({ colWid: 3, width: "75vw" });
-		// this.setState({ height: "92vh" });
+		this.setState({ height: "100vh", marginTop: "0vh" });
 	};
 
 	render() {
 		return (
-			<div className="App" style={(margin, { background: "#181919" })}>
-				<Navbar
-					variant="dark"
-					style={{ height: "8vh" }}
-					className="ml-auto"
-				>
-					<Navbar.Brand style={{ marginLeft: "15px" }}>
-						EleNa: Elevation-based Navigation
-					</Navbar.Brand>
-					<Nav className="ml-auto">
-						<Navbar.Text>
-							Created by-
-						</Navbar.Text>
-						<Nav.Link href="">
-							Nilay
-						</Nav.Link>
-						<Nav.Link href="">
-							Max
-						</Nav.Link>
-						<Nav.Link href="">
-							Meghna
-						</Nav.Link>
-						<Nav.Link href="">
-							Sai
-						</Nav.Link>
-						<Navbar.Text>
-							|
-						</Navbar.Text>
-						<Nav.Link href="https://github.com">Github</Nav.Link>
-					</Nav>
-				</Navbar>
-				<Row style={{ width: "100vw", height: "92vh" }}>
-					<Col md={this.state.colWid} bg="dark" style={center}>
+			<div
+				className="App"
+				style={
+					
+					{ background: "rgb(23, 24, 24)", position: "relative", alignItems: "bottom" }
+				}
+			>
+				<div style={{ zIndex: 0, position: "absolute" }}>
+					<MapView
+						data={this.state.data}
+						viewport={this.state.viewport}
+						_onViewStateChange={this._onViewStateChange}
+						height={this.state.height}
+						width={this.state.width}
+						marginTop={this.state.marginTop}
+					/>
+				</div>
+				<div style={{ zIndex: 9, height: "100vh" }}>
+					<Navbar
+						variant="dark"
+						style={{ height: "8vh", background: "rgba(0, 0, 0, 0.5)", }}
+						className="ml-auto"
+					>
+						<Navbar.Brand style={{ marginLeft: "15px" }}>
+							EleNa: Elevation-based Navigation
+						</Navbar.Brand>
+						<Nav className="ml-auto">
+							<Navbar.Text>Created by-</Navbar.Text>
+							<Nav.Link href="">Nilay</Nav.Link>
+							<Nav.Link href="">Max</Nav.Link>
+							<Nav.Link href="">Meghna</Nav.Link>
+							<Nav.Link href="">Sai</Nav.Link>
+							<Nav.Link
+								href="https://github.com"
+								style={{ borderLeft: "solid 1px grey" }}
+							>
+								Github
+							</Nav.Link>
+						</Nav>
+					</Navbar>
+					<div>
 						<UserInput
+							className="userInput"
 							updateData={this.updateData}
 							payload={this.state}
 						/>
-					</Col>
-					<Col style={right}>
-						<MapView
-							style={margin}
-							data={this.state.data}
-							viewport={this.state.viewport}
-							_onViewStateChange={this._onViewStateChange}
-							height={this.state.height}
-							width={this.state.width}
-						/>
-						{/* Hello */}
-					</Col>
-				</Row>
+					</div>
+				</div>
 			</div>
 		);
 	}
 }
 
-const center = {
-	display: "flex",
-	alignItems: "center",
-	justifyContent: "center",
-	textAlign: "center",
-};
 
-const right = {
-	display: "flex",
-	justifyContent: "right",
-	textAlign: "right",
-	// position: "absolute",
-	right: "0px",
-};
 
-const margin = {
-	// marginBottom: "15px",
-	// paddingBottom: "1em",
-};
 
 export default App;

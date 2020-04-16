@@ -24,15 +24,20 @@ export default class MapView extends React.Component {
 			getColor: [255, 255, 255]
 		});
 
-		const iconTest =  [
-				{name: 'Colma (COLM)', address: '365 D Street, Colma CA 94014', exits: 4214, coordinates: [-122.466233, 37.684638]},
-			]
+		// const iconTest =  [
+		// 		{name: 'Colma (COLM)', address: '365 D Street, Colma CA 94014', exits: 4214, coordinates: [-122.466233, 37.684638]},
+		// 	]
 
-		const iconLayer = new IconLayer({
-			id: 'icon-layer',
-			data,
-			pickable: true,
-		})
+		// const iconLayer = new IconLayer({
+		// 	id: 'icon-layer',
+		// 	data,
+		// 	pickable: true,
+		// })
+
+		let style = {
+			top: "auto", left: "auto", zIndex: "0",
+			marginTop: this.props.marginTop
+		}
 
 		return (
 			<DeckGL
@@ -45,7 +50,7 @@ export default class MapView extends React.Component {
 				layers={path}
 				width={this.props.width}
 				height={this.props.height}
-				style={{ top: "auto", left: "auto", zIndex: "0" }}
+				style={style}
 			>
 				<StaticMap
 					mapStyle="mapbox://styles/mapbox/dark-v10"
