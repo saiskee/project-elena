@@ -56,7 +56,12 @@ class App extends Component {
 	}
 
 	updateHeight = () => {
-		this.setState({ height: "100vh", marginTop: "0vh" });
+		if(this.state.height === "100vh") {
+			this.setState({ height: "99vh", marginTop: "1vh" });
+		}
+		else {
+			this.setState({ height: "100vh", marginTop: "0vh" });
+		}
 	};
 
 	render() {
