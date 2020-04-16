@@ -28,7 +28,7 @@ export default class UserInput extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault()
 		console.log(this.state);
-		const resp = {
+		/*const resp = {
 			path: [
 				[-71.1188219, 42.373674],
 				[-71.1185058, 42.3733081],
@@ -83,7 +83,7 @@ export default class UserInput extends Component {
 			color: [255, 255, 255],
 		}
 		this.props.updateData(resp)
-		
+		*/
 		fetch('/route',{
 			method: 'POST',
 			body: JSON.stringify(this.state)
