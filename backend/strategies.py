@@ -3,19 +3,22 @@ import math
 from abstract_strategy import RoutingStrategy
 from priority_queue import PriorityQueue
 
-
+# Used in Dijkstra
+from itertools import count
+"""
 class StrategyUCS(RoutingStrategy):
     def __init__(self, flat_graph, projected_graph, g_nodes):
         super().__init__(flat_graph, projected_graph, g_nodes)
 
     def get_route(self, start, goal):
-
-        print("Start: ", start, "End:", goal);
+        
+        print("Start: ", start, "End:", goal)
         # UCS uses priority queue, priority is the cumulative cost (smaller cost)
         queue = PriorityQueue()
 
         # expands initial node
         graph = self._projected_graph
+
 
         # get the keys of all successors of initial node
         neighbors = graph.neighbors(start)
@@ -66,14 +69,14 @@ class StrategyUCS(RoutingStrategy):
         lon2 = self._g_nodes.loc[node2].y
 
         return math.sqrt(math.pow(lat2 - lat1, 2) + math.pow(lon2 - lon1, 2))
-
+"""
 
 class StrategyBFS(RoutingStrategy):
-    def __init__(self, flat_graph, projected_graph, g_nodes):
-        super().__init__(flat_graph, projected_graph, g_nodes)
+    def __init__(self, graph):
+        super().__init__(graph)
 
     def get_route(self, start, goal):
-        graph = self._projected_graph
+        graph = self.graph
         explored = []
 
         queue = [[start]]
@@ -102,8 +105,8 @@ class StrategyBFS(RoutingStrategy):
         # Return empty list if path doesn't exist
         return []
 
-
-class StrategyAStar(RoutingStrategy):
+"""
+class StrategyAStarOld(RoutingStrategy):
     def __init__(self, flat_graph, projected_graph, g_nodes):
         super().__init__(flat_graph, projected_graph, g_nodes)
 
@@ -159,11 +162,128 @@ class StrategyAStar(RoutingStrategy):
         lat = self._g_nodes.loc[id].x
         lon = self._g_nodes.loc[id].y
         return [lat, lon]
-
+"""
 
 class StrategyDijkstra(RoutingStrategy):
-    def __init__(self, flat_graph, projected_graph, g_nodes):
-        super().__init__(flat_graph, projected_graph, g_nodes)
+    def __init__(self, graph):
+        super().__init__(graph)
 
-    def get_route(self, graph, start, goal):
-        pass
+    def get_route(self, source, goal):
+        graph = self.graph
+        weight = weight_function(graph, 'length')
+
+        paths = {source: [source]}
+
+        successor_graph = graph._succ if graph.is_directed() else graph._adj
+
+        push = heapq.heappush
+        pop = heapq.heappop
+        dist = {} # Dictionary of Final distances
+        seen = {}
+        
+        c = count()
+        queue = []
+        if source not in graph:
+            return [] # Figure out way to handle exceptions properly
+        seen[source] = 0
+        push(queue, (0, next(c), source))
+        while queue:
+            d, _, v = pop(queue)
+            if v in dist:
+                continue # already searched this node
+            dist[v] = d
+            if v == goal:
+                break
+            for u, e in successor_graph[v].items():
+                cost = weight(v, u, e)
+                if cost is None: continue
+
+                vu_dist = dist[v] + cost
+                if u in dist:
+                    if vu_dist < dist[u]:
+                        pass # Contradictory paths found, negative weights?
+                elif u not in seen or vu_dist < seen[u]:
+                    seen[u] = vu_dist
+                    push(queue, (vu_dist, next(c), u))
+                    paths[u] = paths[v]+[u]
+        return paths[goal]
+
+class StrategyAStar(RoutingStrategy):
+    def __init__(self, graph):
+        super().__init__(graph)
+    
+    def manhat(self, start, goal):
+        amherst_graph = self.graph
+        start_x, start_y = amherst_graph.nodes[start]['x'], amherst_graph.nodes[start]['y']
+        end_x, end_y = amherst_graph.nodes[goal]['x'], amherst_graph.nodes[goal]['y']
+        # return 0 # Dijkstra, essentially
+        return ((end_x - start_x) ** 2 + (end_y - start_y) ** 2)**0.5
+
+    def get_route(self, source, goal):
+        push = heapq.heappush
+        pop = heapq.heappop
+
+        graph = self.graph
+        successor_graph = graph._succ if graph.is_directed() else graph._adj
+
+        weight = weight_function(graph, 'length')
+        # The queue stores priority, node, cost to reach, and parent.
+        # Uses Python heapq to keep in priority order.
+        # Add a counter to the queue to prevent the underlying heap from
+        # attempting to compare the nodes themselves. The hash breaks ties in the
+        # priority and is guaranteed unique for all nodes in the graph.
+        c = count()
+        queue = [(0, next(c), source, 0, None)]
+
+        # Maps enqueued nodes to distance of discovered paths and the
+        # computed heuristics to target. We avoid computing the heuristics
+        # more than once and inserting the node into the queue too many times.
+        enqueued = {}
+        # Maps explored nodes to parent closest to the source.
+        explored = {}
+
+        while queue:
+            # Pop the smallest item from queue.
+            _, __, curnode, dist, parent = pop(queue)
+
+            if curnode == goal:
+                path = [curnode]
+                node = parent
+                while node is not None:
+                    path.append(node)
+                    node = explored[node]
+                path.reverse()
+                return path
+
+            if curnode in explored:
+                # Do not override the parent of starting node
+                if explored[curnode] is None:
+                    continue
+
+                # Skip bad paths that were enqueued before finding a better one
+                qcost, h = enqueued[curnode]
+                if qcost < dist:
+                    continue
+
+            explored[curnode] = parent
+
+            for neighbor, w in successor_graph[curnode].items():
+                ncost = dist + weight(curnode, neighbor, w)
+                if neighbor in enqueued:
+                    qcost, h = enqueued[neighbor]
+                    # if qcost <= ncost, a less costly path from the
+                    # neighbor to the source was already determined.
+                    # Therefore, we won't attempt to push this neighbor
+                    # to the queue
+                    if qcost <= ncost:
+                        continue
+                else:
+                    h = self.manhat(neighbor, goal)
+                enqueued[neighbor] = ncost, h
+                push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
+
+
+def weight_function(graph, weight):
+    if graph.is_multigraph():
+        return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
+    return lambda u, v, data: data.get(weight, 1)

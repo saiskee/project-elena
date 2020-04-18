@@ -14,7 +14,7 @@ export default class UserInput extends Component {
 		dest: "",
 		goal: "Minimize Elevation Gain",
 		limit: "0",
-		algorithm: "Uniform Cost Search",
+		algorithm: "AStar",
 		loading: false
 	};
 
@@ -26,7 +26,7 @@ export default class UserInput extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
-		console.log(this.state);
+		// console.log(this.state);
 		this.setState({ loading: true })
 		const resp = {
 			path: [
@@ -82,6 +82,7 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		};
+		
 		// this.props.updateData(resp); 
 		fetch('/route',{
 			method: 'POST',
@@ -89,7 +90,7 @@ export default class UserInput extends Component {
 		})
 		.then(async res => {
 			let data = await res.json();
-			console.log(data);
+			// console.log(data);
 			this.props.updateData(data);
 			this.setState({ loading: false })
 		})
@@ -97,16 +98,6 @@ export default class UserInput extends Component {
 			console.log(err);
 		})
 
-
-		// axios
-		// 	.post("/route", this.state)
-		// 	.then(res => {
-		// 		console.log(res);
-		// 		// this.props.updateData(res)
-		// 	})
-		// 	.catch(err => {
-		// 		console.log(err);
-		// 	});
 	}
 
 	render() {
@@ -164,9 +155,13 @@ export default class UserInput extends Component {
 									this.handleChange(e);
 								}}
 							>
-								<option>Uniform Cost Search</option>
-								<option>A Star</option>
+								{/* <option>Uniform Cost Search</option> */}
+								<option>AStar</option>
+								{/* <option>AStar (Old)</option> */}
 								<option>Breadth First Search</option>
+								<option>Dijkstra</option>
+								<option>Networkx Dijkstra</option>
+								
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>

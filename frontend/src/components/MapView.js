@@ -13,6 +13,32 @@ const MAPBOX_TOKEN =
 export default class MapView extends React.Component {
 	render() {
 		const data = this.props.data;
+		
+		const renderColor = (item) => {
+			if (item.path[0][2] > 0){
+				return [255, 0, 0]
+			}
+			return [0, 255, 0]
+		}
+		
+		const pathLayers = []
+		// console.log(data)
+		if (data[0] && data[0].path){
+			let d = data[0]
+			for (let i = 0; i < d.path.length-1; i++){
+				let newData = [{color: d.color, name: d.name, path: d.path.slice(i, i+2)}]
+				const newLayer = new PathLayer({
+					id: "path-layer" + String(i),
+					data: newData,
+					pickable: true,
+					widthScale: 5,
+					widthMinPixels: 2,
+					getColor: renderColor,
+
+				})
+				pathLayers.push(newLayer)
+			}
+		}
 
 		const path = new PathLayer({
 			id: "path-layer",
@@ -20,7 +46,7 @@ export default class MapView extends React.Component {
 			pickable: true,
 			widthScale: 5,
 			widthMinPixels: 2,
-			getColor: [255, 255, 255],
+			getColor: renderColor,
 		});
 
 		const startPinData = [
@@ -72,7 +98,7 @@ export default class MapView extends React.Component {
 					this.props._onViewStateChange(v);
 				}}
 				controller={true}
-				layers={ [path, startPin] }
+				layers={ pathLayers }
 				width={this.props.width}
 				height={this.props.height}
 				style={style}
