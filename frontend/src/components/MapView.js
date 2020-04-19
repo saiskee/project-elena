@@ -14,17 +14,41 @@ export default class MapView extends React.Component {
 	render() {
 		const data = this.props.data;
 		
-		const renderColor = (item) => {
-			if (item.path[0][2] > 0){
-				return [255, 0, 0]
+
+		function perc2color(perc) {
+			var r, g, b = 0;
+			if(perc < 50) {
+				g = 255;
+				r = Math.round(5.1 * perc);
 			}
-			return [0, 255, 0]
+			else {
+				r = 255;
+				g = Math.round(510 - 5.10 * perc);
+			}
+			
+			return [r, g, b];
+		}
+
+		const renderColor = (item, min, max) => {
+			// get max and min grades
+			let grade = item.path[0][2] // between max and min
+			let grade_percent = (grade - min) * 100 / (max - min)
+			return perc2color(grade_percent)
 		}
 		
 		const pathLayers = []
-		// console.log(data)
 		if (data[0] && data[0].path){
 			let d = data[0]
+			let min_grade = Number.POSITIVE_INFINITY;
+			let max_grade = Number.NEGATIVE_INFINITY;
+			for (let path of d.path){
+				if (path[2] < min_grade){
+					min_grade = path[2]
+				}
+				if (path[2] > max_grade){
+					max_grade = path[2]
+				}
+			}
 			for (let i = 0; i < d.path.length-1; i++){
 				let newData = [{color: d.color, name: d.name, path: d.path.slice(i, i+2)}]
 				const newLayer = new PathLayer({
@@ -33,7 +57,7 @@ export default class MapView extends React.Component {
 					pickable: true,
 					widthScale: 5,
 					widthMinPixels: 2,
-					getColor: renderColor,
+					getColor: (item) => renderColor(item, min_grade, max_grade),
 
 				})
 				pathLayers.push(newLayer)

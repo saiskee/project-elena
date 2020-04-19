@@ -15,7 +15,8 @@ export default class UserInput extends Component {
 		goal: "Minimize Elevation Gain",
 		limit: "0",
 		algorithm: "AStar",
-		loading: false
+		loading: false,
+		method: "drive"
 	};
 
 	handleChange = (e) => {
@@ -193,6 +194,23 @@ export default class UserInput extends Component {
 									this.handleChange(e);
 								}}
 							/>
+						</Form.Group>
+					</Form.Row>
+
+					<Form.Row>
+						<Form.Group as={Col} controlId="method">
+							<Form.Label>Transportation Method</Form.Label>
+							<Form.Control
+								as="select"
+								value={this.state.method}
+								onChange={(e) => {
+									this.handleChange(e);
+								}}
+							>
+								<option>drive</option>
+								<option>bike</option>
+								<option>walk</option>
+							</Form.Control>
 						</Form.Group>
 					</Form.Row>
 
