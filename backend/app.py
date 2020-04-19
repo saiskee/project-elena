@@ -5,15 +5,22 @@ import networkx as nx
 import pickle as pkl
 from context import Context
 import strategies
+import multiprocessing
 
 app = Flask(__name__)
-
-mode = "drive" # "drive", "walk", "cycle"
-
+graphs = {}
+modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)] 
+def load_graph(method, graphs):
+    with open("./data/massachusetts_{}.pkl".format(method), 'rb') as infile:
+        _graph = pkl.load(infile)
+        graphs[method] = _graph
+        print('Loaded {} graph'.format(method))
 # Load Cached Graphs from Memory
-print("Loading Graph")
-with open("./data/massachusetts_{}.pkl".format(mode), 'rb') as infile:
-    massachusetts_graph = pkl.load(infile)
+print("Loading Graphs")
+for mode in modes:
+    load_graph(mode[0],mode[1])
+# with open("./data/massachusetts_{}.pkl".format(mode), 'rb') as infile:
+#     graph = pkl.load(infile)
 
 print("Cached Graphs Loaded!")
 
@@ -25,11 +32,12 @@ def index():
 def route():
     """
 	request.data: {
-		start: "Start Addres Lane"
+		start: "Start Address Lane"
 		dest: "Dest"
 		goal: "Max/ Min"
 		limit: "##"
 		algorithm: "ucs/astar/bfs/..."
+        method: "drive" / walk / bike
 	}
 	"""
     data = json.loads(request.data)
@@ -38,47 +46,41 @@ def route():
     start_latlng = ox.geocode(data['start'])
     dest_latlng = ox.geocode(data['dest'])
 
-    start_node = ox.get_nearest_node(massachusetts_graph, start_latlng)
-    dest_node = ox.get_nearest_node(massachusetts_graph, dest_latlng)
+    graph = graphs[data['method']]
+
+    start_node = ox.get_nearest_node(graph, start_latlng)
+    dest_node = ox.get_nearest_node(graph, dest_latlng)
     
     algorithm = data['algorithm']
+    limit = float(data['limit'])
+    return get_route(graph, start_node, dest_node, algorithm)
 
-    return get_route(start_node, dest_node, algorithm)
 
+def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0)):
 
-def get_route(start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0)):
-
-    # if algorithm == 'AStar (Old)':
-    #     context = Context(strategies.StrategyAStarOld(massachusetts_graph))
-    #     path = context.run_strategy_route(start_node, dest_node)
-    
-    # if algorithm == 'Uniform Cost Search':
-    #     context = Context(strategies.StrategyUCS(massachusetts_graph))
-    #     path = context.run_strategy_route(start_node, dest_node)
-    
     if algorithm == 'Breadth First Search':
-        context = Context(strategies.StrategyBFS(massachusetts_graph))
+        context = Context(strategies.StrategyBFS(graph))
         path = context.run_strategy_route(start_node, dest_node)
     
     elif algorithm == 'Dijkstra':
-        context = Context(strategies.StrategyDijkstra(massachusetts_graph))
+        context = Context(strategies.StrategyDijkstra(graph))
         path = context.run_strategy_route(start_node, dest_node)
 
     elif algorithm == 'AStar':
-        context = Context(strategies.StrategyAStar(massachusetts_graph))
+        context = Context(strategies.StrategyAStar(graph))
         path = context.run_strategy_route(start_node, dest_node)
         # path = nx.astar_path(amherst_graph, start_node, dest_node, weight='length', heuristic=manhat)
     
     elif algorithm == 'Networkx Dijkstra':
-        path = nx.shortest_path(massachusetts_graph, start_node, dest_node, weight='length')
+        path = nx.shortest_path(graph, start_node, dest_node, weight='length')
     print(path)
     final_path = []
     for i in range(len(path)-1):
         nodeId = path[i]
         nextNode = path[i+1]
-        x = massachusetts_graph.nodes[nodeId]['x']
-        y = massachusetts_graph.nodes[nodeId]['y']
-        edge = massachusetts_graph[nodeId][nextNode][0]
+        x = graph.nodes[nodeId]['x']
+        y = graph.nodes[nodeId]['y']
+        edge = graph[nodeId][nextNode][0]
         grade = 0
         if 'grade' in edge:
             grade = edge['grade']

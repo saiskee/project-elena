@@ -202,14 +202,15 @@ export default class UserInput extends Component {
 							<Form.Label>Transportation Method</Form.Label>
 							<Form.Control
 								as="select"
+								disabled
 								value={this.state.method}
 								onChange={(e) => {
 									this.handleChange(e);
 								}}
 							>
 								<option>drive</option>
-								<option>bike</option>
-								<option>walk</option>
+								{/* <option>bike</option>
+								<option>walk</option> */}
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>

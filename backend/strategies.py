@@ -75,7 +75,7 @@ class StrategyBFS(RoutingStrategy):
     def __init__(self, graph):
         super().__init__(graph)
 
-    def get_route(self, start, goal):
+    def get_route(self, start, goal, edge_weight='length'):
         graph = self.graph
         explored = []
 
@@ -168,9 +168,9 @@ class StrategyDijkstra(RoutingStrategy):
     def __init__(self, graph):
         super().__init__(graph)
 
-    def get_route(self, source, goal):
+    def get_route(self, source, goal, edge_weight='length'):
         graph = self.graph
-        weight = weight_function(graph, 'length')
+        weight = weight_function(graph, edge_weight)
 
         paths = {source: [source]}
 
@@ -195,7 +195,8 @@ class StrategyDijkstra(RoutingStrategy):
             if v == goal:
                 break
             for u, e in successor_graph[v].items():
-                cost = weight(v, u, e)
+                cost = weight(v, u, e) + 1
+
                 if cost is None: continue
 
                 vu_dist = dist[v] + cost
@@ -219,31 +220,21 @@ class StrategyAStar(RoutingStrategy):
         # return 0 # Dijkstra, essentially
         return ((end_x - start_x) ** 2 + (end_y - start_y) ** 2)**0.5
 
-    def get_route(self, source, goal):
+    def get_route(self, source, goal, edge_weight='length'):
         push = heapq.heappush
         pop = heapq.heappop
 
         graph = self.graph
         successor_graph = graph._succ if graph.is_directed() else graph._adj
 
-        weight = weight_function(graph, 'length')
-        # The queue stores priority, node, cost to reach, and parent.
-        # Uses Python heapq to keep in priority order.
-        # Add a counter to the queue to prevent the underlying heap from
-        # attempting to compare the nodes themselves. The hash breaks ties in the
-        # priority and is guaranteed unique for all nodes in the graph.
+        weight = weight_function(graph, edge_weight)
         c = count()
         queue = [(0, next(c), source, 0, None)]
 
-        # Maps enqueued nodes to distance of discovered paths and the
-        # computed heuristics to target. We avoid computing the heuristics
-        # more than once and inserting the node into the queue too many times.
         enqueued = {}
-        # Maps explored nodes to parent closest to the source.
         explored = {}
 
         while queue:
-            # Pop the smallest item from queue.
             _, __, curnode, dist, parent = pop(queue)
 
             if curnode == goal:
@@ -256,11 +247,9 @@ class StrategyAStar(RoutingStrategy):
                 return path
 
             if curnode in explored:
-                # Do not override the parent of starting node
                 if explored[curnode] is None:
                     continue
 
-                # Skip bad paths that were enqueued before finding a better one
                 qcost, h = enqueued[curnode]
                 if qcost < dist:
                     continue
@@ -271,10 +260,6 @@ class StrategyAStar(RoutingStrategy):
                 ncost = dist + weight(curnode, neighbor, w)
                 if neighbor in enqueued:
                     qcost, h = enqueued[neighbor]
-                    # if qcost <= ncost, a less costly path from the
-                    # neighbor to the source was already determined.
-                    # Therefore, we won't attempt to push this neighbor
-                    # to the queue
                     if qcost <= ncost:
                         continue
                 else:
@@ -284,6 +269,7 @@ class StrategyAStar(RoutingStrategy):
 
 
 def weight_function(graph, weight):
-    if graph.is_multigraph():
-        return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
-    return lambda u, v, data: data.get(weight, 1)
+    def weight_(source, dest, edge_data):
+        return min(attr.get(weight, 1) for attr in edge_data.values())
+    # return lambda u, v, d: min(attr.get(weight, 1) for attr in d.values())
+    return weight_

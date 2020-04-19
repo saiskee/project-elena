@@ -27,10 +27,10 @@ class Context:
 
         self._strategy = strategy
 
-    def run_strategy_route(self, start, goal) -> None:
+    def run_strategy_route(self, start, goal, weight='length') -> None:
         """
         Call the routing implementation of the specific concrete strategy.
         """
-        result = self._strategy.get_route(start, goal)
+        result = self._strategy.get_route(start, goal, edge_weight=weight)
         return result
 
