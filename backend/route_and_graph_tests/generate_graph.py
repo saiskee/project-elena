@@ -6,7 +6,7 @@ import math
 
 
 def create_graph():
-    G = nx.generators.directed.random_uniform_k_out_graph(10, 2, self_loops=False, seed=1)
+    G = nx.generators.directed.random_uniform_k_out_graph(20, 4, self_loops=False, seed=1)
     pos = nx.layout.spring_layout(G, seed=10)
     remove_edges = []
 

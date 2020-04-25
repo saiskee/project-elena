@@ -54,7 +54,7 @@ class StrategyBFS(RoutingStrategy):
         return []
 
     def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling maximizing elevation")
+        # print("calling maximizing elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
@@ -91,7 +91,7 @@ class StrategyBFS(RoutingStrategy):
         return max_path
 
     def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling minimum elevation")
+        # print("calling minimum elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
@@ -130,7 +130,7 @@ class StrategyDijkstra(RoutingStrategy):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
-        print("calling vanilla shortest path")
+        # print("calling vanilla shortest path")
         graph = self.graph
         weight = weight_function(graph, edge_weight)
         paths = {source: [source]}
@@ -173,7 +173,7 @@ class StrategyDijkstra(RoutingStrategy):
         return paths[goal]
 
     def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling maximizing elevation")
+        # print("calling maximizing elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
@@ -210,7 +210,7 @@ class StrategyDijkstra(RoutingStrategy):
         return max_path
 
     def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling minimum elevation")
+        # print("calling minimum elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
@@ -295,7 +295,7 @@ class StrategyAStar(RoutingStrategy):
                 push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling maximizing elevation")
+        # print("calling maximizing elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
@@ -332,7 +332,7 @@ class StrategyAStar(RoutingStrategy):
         return max_path
 
     def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
-        print("calling minimum elevation")
+        # print("calling minimum elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
