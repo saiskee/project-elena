@@ -9,7 +9,7 @@ def create_graph():
     G = nx.generators.directed.random_uniform_k_out_graph(20, 4, self_loops=False, seed=1)
     pos = nx.layout.spring_layout(G, seed=10)
     remove_edges = []
-
+    random.seed(5)
     for node_num in G.nodes:
         G.nodes[node_num]['x'] = pos[node_num][0] * 100
         G.nodes[node_num]['y'] = pos[node_num][1] * 100
