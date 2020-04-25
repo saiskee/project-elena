@@ -1,4 +1,5 @@
 import pickle as pkl
+import networkx as nx
 from backend.src.context import Context
 from backend.src import strategies
 
@@ -13,7 +14,6 @@ def load_graph():
 
 
 def dijkstra_shortest_path():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyDijkstra(graph))
     path = context.run_strategy_route(0, 5)
@@ -22,7 +22,6 @@ def dijkstra_shortest_path():
 
 
 def dijkstra_min_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyDijkstra(graph))
     path = context.run_strategy_route(0, 5)
@@ -31,7 +30,6 @@ def dijkstra_min_elevation():
 
 
 def dijkstra_max_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyDijkstra(graph))
     path = context.run_strategy_route(0, 5)
@@ -40,7 +38,6 @@ def dijkstra_max_elevation():
 
 
 def bfs_shortest_path():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyBFS(graph))
     path = context.run_strategy_route(0, 5)
@@ -49,7 +46,6 @@ def bfs_shortest_path():
 
 
 def bfs_min_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyBFS(graph))
     path = context.run_strategy_route(0, 5)
@@ -58,7 +54,6 @@ def bfs_min_elevation():
 
 
 def bfs_max_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyBFS(graph))
     path = context.run_strategy_route(0, 5)
@@ -67,7 +62,6 @@ def bfs_max_elevation():
 
 
 def a_star_shortest_path():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyAStar(graph))
     path = context.run_strategy_route(0, 5)
@@ -76,7 +70,6 @@ def a_star_shortest_path():
 
 
 def a_star_min_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyAStar(graph))
     path = context.run_strategy_route(0, 5)
@@ -85,7 +78,6 @@ def a_star_min_elevation():
 
 
 def a_star_max_elevation():
-    load_graph()
     print("Calling get_route")
     context = Context(strategies.StrategyAStar(graph))
     path = context.run_strategy_route(0, 5)
@@ -96,6 +88,7 @@ def a_star_max_elevation():
 def print_path(path):
     return_path = []
     for node in path:
+        print(node)
         print(graph.nodes[node])
         # should be x and y
         lat = graph.nodes[node]["y"]
@@ -105,8 +98,16 @@ def print_path(path):
     return {"nodes": return_path}
 
 
+def shortest_path():
+    route = nx.shortest_path(graph, 0, 5, weight='length')
+    print_path(route)
+    return route
+
+
 if __name__ == "__main__":
-    dijkstra_shortest_path()
+    load_graph()
+    shortest_path()
+    # dijkstra_shortest_path()
     # dijkstra_min_elevation()
     # dijkstra_max_elevation()
     # bfs_shortest_path()
