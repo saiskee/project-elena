@@ -87,6 +87,7 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
 
     print(path)
     final_path = []
+    lengths_and_elevations = []
     for i in range(len(path)-1):
         nodeId = path[i]
         nextNode = path[i+1]
@@ -97,12 +98,14 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
         length = 0
         if 'length' in edge:
             length = edge['length']
-        final_path.append((x, y, length, elevation))
+        final_path.append((x, y))
+        lengths_and_elevations.append({'length': length, 'elevation': elevation})
     # Add Last Node
     lastNode = graph.nodes[nextNode]
-    final_path.append((lastNode['x'], lastNode['y'], 0, lastNode['elevation']))
+    final_path.append((lastNode['x'], lastNode['y']))
+    lengths_and_elevations.append({'length': 0, 'elevation': lastNode['elevation']})
     # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
-    return {'path': final_path, 'name': name, 'color': color}
+    return {'path': final_path, 'path_data': lengths_and_elevations, 'name': name, 'color': color}
 
 
 if __name__ == "__main__":
@@ -115,7 +118,7 @@ if __name__ == "__main__":
     # other_get_route(start_lat, start_long, end_lat, end_long)
     start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
     end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
-    print("Calling get_route")
-    get_route(graphs['drive'], start_node, end_node, algorithm='Breadth First Search', name='Route', color=(255, 0, 0), limit=0,
-              goal='Vanilla')
+    print("Calling get_route from {} to {}".format(start_node, end_node))
+    get_route(graphs['drive'], start_node, end_node, algorithm='Dijkstra', name='Route', color=(255, 0, 0), limit=0,
+              goal='Min')
 
