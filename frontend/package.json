@@ -17,7 +17,8 @@
     "react-leaflet": "^2.6.3",
     "react-map-gl": "^5.2.3",
     "react-router-hash-link": "^1.2.2",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "react-chartjs-2": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

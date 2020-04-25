@@ -31,26 +31,26 @@ export default class MapView extends React.Component {
 
 		const renderColor = (item, min, max) => {
 			// get max and min grades
-			let grade = item.path[0][2] // between max and min
+			let grade = item.path_data[0].elevation; // between max and min
 			let grade_percent = (grade - min) * 100 / (max - min)
 			return perc2color(grade_percent)
-		}
+		};
 		
 		const pathLayers = []
 		if (data[0] && data[0].path){
 			let d = data[0]
 			let min_grade = Number.POSITIVE_INFINITY;
 			let max_grade = Number.NEGATIVE_INFINITY;
-			for (let path of d.path){
-				if (path[2] < min_grade){
-					min_grade = path[2]
+			for (let path of d.path_data){
+				if (path.elevation < min_grade){
+					min_grade = path.elevation
 				}
-				if (path[2] > max_grade){
-					max_grade = path[2]
+				if (path.elevation > max_grade){
+					max_grade = path.elevation
 				}
 			}
 			for (let i = 0; i < d.path.length-1; i++){
-				let newData = [{color: d.color, name: d.name, path: d.path.slice(i, i+2)}]
+				let newData = [{color: d.color, name: d.name, path: d.path.slice(i, i+2), path_data: d.path_data.slice(i, i+2)}];
 				const newLayer = new PathLayer({
 					id: "path-layer" + String(i),
 					data: newData,
@@ -99,7 +99,7 @@ export default class MapView extends React.Component {
 				anchorY: 128
 			  }),
 		
-			getIcon: d => 'marker',
+			//getIcon: d => 'marker',
 
 			sizeScale: 15,
 			getPosition: d => d.coordinates,
