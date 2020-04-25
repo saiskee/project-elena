@@ -5,14 +5,19 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 
-
 export default class UserInput extends Component {
 	state = {
 		start: "",
 		dest: "",
 		goal: "Minimize Elevation Gain",
 		limit: "0",
+<<<<<<< Updated upstream
 		algorithm: "Uniform Cost Search",
+=======
+		algorithm: "AStar",
+		loading: false,
+		method: "drive",
+>>>>>>> Stashed changes
 	};
 
 	handleChange = (e) => {
@@ -23,7 +28,12 @@ export default class UserInput extends Component {
 
 	handleSubmit = (e) => {
 		e.preventDefault();
+<<<<<<< Updated upstream
 		console.log(this.state);
+=======
+		// console.log(this.state);
+		this.setState({ loading: true });
+>>>>>>> Stashed changes
 		const resp = {
 			path: [
 				[-71.1188219, 42.373674],
@@ -78,16 +88,28 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		};
+<<<<<<< Updated upstream
 		// this.props.updateData(resp);
 
 		fetch("http://localhost:5000/route", {
+=======
+
+		// this.props.updateData(resp);
+		fetch("/route", {
+>>>>>>> Stashed changes
 			method: "POST",
 			body: JSON.stringify(this.state),
 		})
 			.then(async (res) => {
 				let data = await res.json();
+<<<<<<< Updated upstream
 				console.log(data);
 				this.props.updateData(data);
+=======
+				// console.log(data);
+				this.props.updateData(data);
+				this.setState({ loading: false });
+>>>>>>> Stashed changes
 			})
 			.catch((err) => {
 				console.log(err);
@@ -102,8 +124,8 @@ export default class UserInput extends Component {
 					width: "400px",
 					background: "rgba(0, 0, 0, 0.5)",
 					color: "#ffffff",
-					marginTop: "5%",
-					marginLeft: "5%"
+					marginTop: "2.5%",
+					marginLeft: "5%",
 				}}
 			>
 				<Form
@@ -152,6 +174,11 @@ export default class UserInput extends Component {
 								<option>Uniform Cost Search</option>
 								<option>A Star</option>
 								<option>Breadth First Search</option>
+<<<<<<< Updated upstream
+=======
+								<option>Dijkstra</option>
+								<option>Networkx Dijkstra</option>
+>>>>>>> Stashed changes
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>
@@ -188,7 +215,16 @@ export default class UserInput extends Component {
 
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
+<<<<<<< Updated upstream
 							Submit
+=======
+							{this.state.loading ? (
+								<Spinner animation="border" />
+							) : (
+								"Submit"
+							)}
+							{/* <Spinner animation="border" /> */}
+>>>>>>> Stashed changes
 						</Button>
 					</Form.Row>
 				</Form>
