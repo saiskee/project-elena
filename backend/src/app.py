@@ -60,29 +60,31 @@ def route():
     return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)
 
 
-def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0), limit=0, goal='Minimize Elevation Gain'):
+def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', color=(255, 0, 0),
+              limit=0, goal='Minimize Elevation Gain'):
+    if goal.startswith('Min'):
+        method = 'min'
+    elif goal.startswith('Max'):
+        method = 'max'
+    else:
+        method = 'vanilla'
 
     if algorithm == 'Breadth First Search':
-        context = Context(strategies.StrategyBFS(graph))
+        context = Context(strategies.StrategyBFS(graph, limit, method))
         path = context.run_strategy_route(start_node, dest_node)
     
     elif algorithm == 'Dijkstra':
-        if goal.startswith('Min'):
-            context = Context(strategies.StrategyDijkstraWithLimitMin(graph, limit))
-            path = context.run_strategy_route(start_node, dest_node)
-        elif goal.startswith('Max'):
-            context = Context(strategies.StrategyDijkstraWithLimitMax(graph, limit))
-            path = context.run_strategy_route(start_node, dest_node)
+        context = Context(strategies.StrategyDijkstra(graph, limit, method))
+        path = context.run_strategy_route(start_node, dest_node)
 
     elif algorithm == 'AStar':
-        context = Context(strategies.StrategyAStar(graph))
+        context = Context(strategies.StrategyAStar(graph, limit, method))
         path = context.run_strategy_route(start_node, dest_node)
-        # path = nx.astar_path(amherst_graph, start_node, dest_node, weight='length', heuristic=manhat)
-    
-    elif algorithm == 'Networkx Dijkstra':
-        context = Context(strategies.StrategyDijkstra(graph))
-        path = context.run_strategy_route(start_node, dest_node, weight='length')
-        # path = nx.shortest_path(graph, start_node, dest_node, weight='length')
+
+    # elif algorithm == 'Networkx Dijkstra':
+    #     context = Context(strategies.StrategyDijkstra(graph))
+    #     path = context.run_strategy_route(start_node, dest_node, weight='length')
+
     print(path)
     final_path = []
     for i in range(len(path)-1):
@@ -96,7 +98,7 @@ def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color
             grade = edge['grade']
         final_path.append((x,y,grade))
     # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
-    return { 'path': final_path, 'name': name, 'color': color }
+    return {'path': final_path, 'name': name, 'color': color}
     
 
 def other_get_route(start_lat, start_long, end_lat, end_long):  # common out this line and uncomment the above lines to run with flask
@@ -127,4 +129,10 @@ if __name__ == "__main__":
     # CS building
     end_lat = 42.395611
     end_long = -72.531612
-    other_get_route(start_lat, start_long, end_lat, end_long)
+    # other_get_route(start_lat, start_long, end_lat, end_long)
+    start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
+    end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
+
+    # get_route(graphs['drive'], start_node, end_node, algorithm='Breadth First Search', name='Route', color=(255, 0, 0), limit=0,
+    #           goal='Vanilla')
+

@@ -31,6 +31,6 @@ class Context:
         """
         Call the routing implementation of the specific concrete strategy.
         """
-        result = self._strategy.get_route(start, goal, edge_weight=weight)
+        result = self._strategy.get_route(start, goal)
         return result
 
