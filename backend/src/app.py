@@ -3,8 +3,8 @@ import json
 import osmnx as ox
 import networkx as nx
 import pickle as pkl
-from backend.src.context import Context
-from backend.src import strategies
+from context import Context
+import strategies
 
 app = Flask(__name__)
 graphs = {}
@@ -12,7 +12,7 @@ modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)]
 
 
 def load_graph(method, graphs):
-    with open("./data/massachusetts_{}.pkl".format(method), 'rb') as infile:
+    with open("data/massachusetts_{}.pkl".format(method), 'rb') as infile:
         _graph = pkl.load(infile)
         graphs[method] = _graph
         print('Loaded {} graph'.format(method))
@@ -38,7 +38,7 @@ def route():
 	request.data: {
 		start: "Start Address Lane"
 		dest: "Dest"
-		goal: "Max/ Min"
+		goal: "Minimize Elevation Gain / Maximize Elevation Gain"
 		limit: "##"
 		algorithm: "ucs/astar/bfs/..."
         method: "drive" / walk / bike
@@ -51,24 +51,28 @@ def route():
     dest_latlng = ox.geocode(data['dest'])
 
     graph = graphs[data['method']]
-
+    goal = data['goal']
     start_node = ox.get_nearest_node(graph, start_latlng)
     dest_node = ox.get_nearest_node(graph, dest_latlng)
     
     algorithm = data['algorithm']
     limit = float(data['limit'])/100
-    return get_route(graph, start_node, dest_node, algorithm, limit=limit)
+    return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)
 
 
-def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0), limit=0):
+def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0), limit=0, goal='Minimize Elevation Gain'):
 
     if algorithm == 'Breadth First Search':
         context = Context(strategies.StrategyBFS(graph))
         path = context.run_strategy_route(start_node, dest_node)
     
     elif algorithm == 'Dijkstra':
-        context = Context(strategies.StrategyDijkstraWithLimit(graph, limit))
-        path = context.run_strategy_route(start_node, dest_node, weight='elevation_change')
+        if goal.startswith('Min'):
+            context = Context(strategies.StrategyDijkstraWithLimitMin(graph, limit))
+            path = context.run_strategy_route(start_node, dest_node)
+        elif goal.startswith('Max'):
+            context = Context(strategies.StrategyDijkstraWithLimitMax(graph, limit))
+            path = context.run_strategy_route(start_node, dest_node)
 
     elif algorithm == 'AStar':
         context = Context(strategies.StrategyAStar(graph))

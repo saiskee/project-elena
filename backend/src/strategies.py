@@ -3,6 +3,7 @@ import math
 from abstract_strategy import RoutingStrategy
 from priority_queue import PriorityQueue
 import graph_utils
+import networkx as nx
 
 # Used in Dijkstra
 from itertools import count
@@ -91,10 +92,10 @@ class StrategyDijkstra(RoutingStrategy):
                     paths[u] = paths[v]+[u]
         return paths[goal]
 
-class StrategyDijkstraWithLimit(RoutingStrategy):
+class StrategyDijkstraWithLimitMin(RoutingStrategy):
      # Assume Limit is some percentage of the shortest path [0,1]
     def __init__(self, graph, limit):
-        super().__init__(graph)
+        self.graph = graph
         self.limit = limit
 
    
@@ -106,53 +107,66 @@ class StrategyDijkstraWithLimit(RoutingStrategy):
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length + shortest_path_length * self.limit
 
-        weight = weight_function(graph, edge_weight)
-        length_func = weight_function(graph, 'length')
+        least_elevation = length_dijkstra.get_route(source, goal, edge_weight='elevation_change')
+        least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
-        paths = {source: [source]}
+        if least_elevation_length > max_path_length:
+            length = len(least_elevation)
+            for i in range(2, length):
+                node = least_elevation[-i]
+                path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i+1])
+                node_to_goal_shortest = length_dijkstra.get_route(node, goal)
+                new_path_length = graph_utils.get_path_length(graph, node_to_goal_shortest)
+                if path_length_to_node + new_path_length <= max_path_length:
+                    return least_elevation[:-i] + node_to_goal_shortest
+        else:
+            return least_elevation
 
-        successor_graph = graph._succ if graph.is_directed() else graph._adj
+class StrategyDijkstraWithLimitMax():
+     # Assume Limit is some percentage of the shortest path [0,1]
+    def __init__(self, graph, limit):
+        self.graph = graph
+        self.limit = limit
 
-        push = heapq.heappush
-        pop = heapq.heappop
-        dist = {} # Dictionary of Final Weights
-        length_dict = {} # Dictionary of Lengths
-        seen = {}
+   
+    def get_route(self, source, goal, edge_weight='elevation_change'):
+        graph = self.graph
+
+        length_dijkstra = StrategyDijkstra(graph)
+        shortest_path = length_dijkstra.get_route(source, goal)
+        shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
+        max_path_length = shortest_path_length * (1+ self.limit)
+
         
-        c = count()
-        queue = []
-        if source not in graph:
-            return [] # Figure out way to handle exceptions properly
-        seen[source] = 0
-        push(queue, (0, next(c), source, 0))
-        while queue:
-            d, _, v, dist_so_far = pop(queue)
-            if v in dist:
-                continue # already searched this node
-            dist[v] = d
-            length_dict[v] = dist_so_far
+        max_path = []
+        length_allowance = max_path_length - shortest_path_length
+        for i in range(0, len(shortest_path)-1):
+            
+            cur_node = shortest_path[i]
+            next_node = shortest_path[i+1]
+            min_distance = graph[cur_node][next_node][0]['length']
+            allowance = length_allowance * (min_distance/shortest_path_length)
 
-            if v == goal:
-                break
-            for u, e in successor_graph[v].items():
-                if (edge_weight=="elevation_change"):
-                    cost = max(0, weight(v, u, e))
-                    length = length_func(v, u, e)
-                else:
-                    cost = weight(v, u, e) + 1
 
-                if cost is None: continue
+            highest_elevation = -1
+            best_path = []
+            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
+                
+                path_elevation = graph_utils.get_path_elevation(graph, path)
+                path_length = graph_utils.get_path_length(graph, path)
 
-                vu_dist = dist[v] + cost
-                vu_length = length_dict[v] + length
-                if u in dist:
-                    if vu_dist < dist[u]:
-                        pass # Contradictory paths found, negative weights?
-                elif (u not in seen or vu_dist < seen[u]) and vu_length <= max_path_length:
-                    seen[u] = vu_dist
-                    push(queue, (vu_dist, next(c), u, vu_length))
-                    paths[u] = paths[v]+[u]
-        return paths[goal]
+                if path_elevation > highest_elevation:
+                    if path_length <= allowance + min_distance:
+                        highest_elevation = path_elevation
+                        best_path = path
+            
+            best_path_length = graph_utils.get_path_length(graph, best_path)
+            length_allowance -= (best_path_length - min_distance)
+
+            for i in best_path[:-1]:
+                max_path.append(i)
+        max_path.append(goal)
+        return max_path
 
 class StrategyAStar(RoutingStrategy):
     def __init__(self, graph):
