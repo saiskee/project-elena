@@ -3,30 +3,34 @@ import json
 import osmnx as ox
 import networkx as nx
 import pickle as pkl
-from context import Context
-import strategies
-import multiprocessing
+from backend.src.context import Context
+from backend.src import strategies
 
 app = Flask(__name__)
 graphs = {}
 modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)] 
+
+
 def load_graph(method, graphs):
     with open("./data/massachusetts_{}.pkl".format(method), 'rb') as infile:
         _graph = pkl.load(infile)
         graphs[method] = _graph
         print('Loaded {} graph'.format(method))
+
+
 # Load Cached Graphs from Memory
 print("Loading Graphs")
 for mode in modes:
-    load_graph(mode[0],mode[1])
-# with open("./data/massachusetts_{}.pkl".format(mode), 'rb') as infile:
-#     graph = pkl.load(infile)
+    load_graph(mode[0], mode[1])
+
 
 print("Cached Graphs Loaded!")
+
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template("index.html", token="Hello elena")
+
 
 @app.route('/route', methods=['POST'])
 def route():
@@ -90,37 +94,33 @@ def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color
     # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
     return { 'path': final_path, 'name': name, 'color': color }
     
-    
 
-# def get_route_(start_lat, start_long, end_lat, end_long):  # common out this line and uncomment the above lines to run with flask
-#     start_node = ox.get_nearest_node(amherst_graph, (start_lat, start_long))
-#     end_node = ox.get_nearest_node(amherst_graph, (end_lat, end_long))
-#     print("Set Strategy to A*.")
-#     context = Context(strategies.StrategyAStar(amherst_graph, amherst_projected, g_nodes))
-#     path = context.run_strategy_route(start_node, end_node)
-#     print_path(path)
-#     print("Set Strategy to UCS.")
-#     context.strategy = strategies.StrategyUCS(amherst_graph, amherst_projected, g_nodes)
-#     path = context.run_strategy_route(start_node, end_node)
-#     print_path(path)
+def other_get_route(start_lat, start_long, end_lat, end_long):  # common out this line and uncomment the above lines to run with flask
+    start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
+    end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
+    print("Set Strategy to Dijkstra.")
+    context = Context(strategies.StrategyDijkstra(graphs['drive']))
+    path = context.run_strategy_route(start_node, end_node)
+    print_path(path)
 
 
-# def print_path(path):
-#     return_path = []
-#     for node in path:
-#         lat = amherst_projected.nodes[node]["lat"]
-#         lng = amherst_projected.nodes[node]["lon"]
-#         return_path.append({'lat': lat, 'lng': lng})
-#     print(return_path)
-#     return {"nodes": return_path}
+def print_path(path):
+    return_path = []
+    for node in path:
+        # should x and y be flipped????
+        lat = graphs['drive'].nodes[node]["x"]
+        lng = graphs['drive'].nodes[node]["y"]
+        return_path.append({'lat': lat, 'lng': lng})
+    print(return_path)
+    return {"nodes": return_path}
 
 
-# if __name__ == "__main__":
-#     print("Calling get_route")
-#     # amherst books
-#     start_lat = 42.375801
-#     start_long = -72.519547
-#     # CS building
-#     end_lat = 42.395611
-#     end_long = -72.531612
-#     get_route(start_lat, start_long, end_lat, end_long)
+if __name__ == "__main__":
+    print("Calling get_route")
+    # amherst books
+    start_lat = 42.375801
+    start_long = -72.519547
+    # CS building
+    end_lat = 42.395611
+    end_long = -72.531612
+    other_get_route(start_lat, start_long, end_lat, end_long)
