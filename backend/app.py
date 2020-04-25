@@ -52,19 +52,19 @@ def route():
     dest_node = ox.get_nearest_node(graph, dest_latlng)
     
     algorithm = data['algorithm']
-    limit = float(data['limit'])
-    return get_route(graph, start_node, dest_node, algorithm)
+    limit = float(data['limit'])/100
+    return get_route(graph, start_node, dest_node, algorithm, limit=limit)
 
 
-def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0)):
+def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0), limit=0):
 
     if algorithm == 'Breadth First Search':
         context = Context(strategies.StrategyBFS(graph))
         path = context.run_strategy_route(start_node, dest_node)
     
     elif algorithm == 'Dijkstra':
-        context = Context(strategies.StrategyDijkstra(graph))
-        path = context.run_strategy_route(start_node, dest_node)
+        context = Context(strategies.StrategyDijkstraWithLimit(graph, limit))
+        path = context.run_strategy_route(start_node, dest_node, weight='elevation_change')
 
     elif algorithm == 'AStar':
         context = Context(strategies.StrategyAStar(graph))
@@ -72,7 +72,9 @@ def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color
         # path = nx.astar_path(amherst_graph, start_node, dest_node, weight='length', heuristic=manhat)
     
     elif algorithm == 'Networkx Dijkstra':
-        path = nx.shortest_path(graph, start_node, dest_node, weight='length')
+        context = Context(strategies.StrategyDijkstra(graph))
+        path = context.run_strategy_route(start_node, dest_node, weight='length')
+        # path = nx.shortest_path(graph, start_node, dest_node, weight='length')
     print(path)
     final_path = []
     for i in range(len(path)-1):
