@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./styles/App.css";
 
 import UserInput from "./components/UserInput";
+import RouteData from "./components/RouteData";
 import MapView from "./components/MapView";
 
 import { FlyToInterpolator } from "@deck.gl/core";
@@ -150,7 +151,17 @@ class App extends Component {
 							payload={this.state}
 						/>
 					</div>
+
+					<div style={{position: "absolute", right: "5%", top: "15%"}}>
+						<RouteData
+							className="routeData"
+							data={this.state.data}
+						/>
+					</div>
+
 				</div>
+
+
 			</div>
 		);
 	}
