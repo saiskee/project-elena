@@ -60,6 +60,7 @@ def route():
     return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)
 
 
+
 def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color = (255,0,0), limit=0, goal='Minimize Elevation Gain'):
 
     if algorithm == 'Breadth First Search':
@@ -90,11 +91,15 @@ def get_route(graph,start_node, dest_node, algorithm='astar',name='Route', color
         nextNode = path[i+1]
         x = graph.nodes[nodeId]['x']
         y = graph.nodes[nodeId]['y']
+        elevation = graph.nodes[nodeId]['elevation']
         edge = graph[nodeId][nextNode][0]
-        grade = 0
-        if 'grade' in edge:
-            grade = edge['grade']
-        final_path.append((x,y,grade))
+        length = 0
+        if 'length' in edge:
+            length = edge['length']
+        final_path.append((x,y,length, elevation))
+    # Add Last Node
+    lastNode = graph.nodes[nextNode]
+    final_path.append((lastNode['x'], lastNode['y'], 0, lastNode['elevation']))
     # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
     return { 'path': final_path, 'name': name, 'color': color }
     
