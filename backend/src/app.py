@@ -92,37 +92,20 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
         nextNode = path[i+1]
         x = graph.nodes[nodeId]['x']
         y = graph.nodes[nodeId]['y']
+        elevation = graph.nodes[nodeId]['elevation']
         edge = graph[nodeId][nextNode][0]
-        grade = 0
-        if 'grade' in edge:
-            grade = edge['grade']
-        final_path.append((x,y,grade))
+        length = 0
+        if 'length' in edge:
+            length = edge['length']
+        final_path.append((x, y, length, elevation))
+    # Add Last Node
+    lastNode = graph.nodes[nextNode]
+    final_path.append((lastNode['x'], lastNode['y'], 0, lastNode['elevation']))
     # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
     return {'path': final_path, 'name': name, 'color': color}
-    
-
-def other_get_route(start_lat, start_long, end_lat, end_long):  # common out this line and uncomment the above lines to run with flask
-    start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
-    end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
-    print("Set Strategy to Dijkstra.")
-    context = Context(strategies.StrategyDijkstra(graphs['drive']))
-    path = context.run_strategy_route(start_node, end_node)
-    print_path(path)
-
-
-def print_path(path):
-    return_path = []
-    for node in path:
-        # should x and y be flipped????
-        lat = graphs['drive'].nodes[node]["x"]
-        lng = graphs['drive'].nodes[node]["y"]
-        return_path.append({'lat': lat, 'lng': lng})
-    print(return_path)
-    return {"nodes": return_path}
 
 
 if __name__ == "__main__":
-    print("Calling get_route")
     # amherst books
     start_lat = 42.375801
     start_long = -72.519547
@@ -132,7 +115,7 @@ if __name__ == "__main__":
     # other_get_route(start_lat, start_long, end_lat, end_long)
     start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
     end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
-
-    # get_route(graphs['drive'], start_node, end_node, algorithm='Breadth First Search', name='Route', color=(255, 0, 0), limit=0,
-    #           goal='Vanilla')
+    print("Calling get_route")
+    get_route(graphs['drive'], start_node, end_node, algorithm='Breadth First Search', name='Route', color=(255, 0, 0), limit=0,
+              goal='Vanilla')
 
