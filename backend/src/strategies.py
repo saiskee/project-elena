@@ -1,8 +1,8 @@
 import heapq
 import math
-from backend.src.abstract_strategy import RoutingStrategy
-from backend.src.priority_queue import PriorityQueue
-import backend.src.graph_utils as graph_utils
+from abstract_strategy import RoutingStrategy
+from priority_queue import PriorityQueue
+import graph_utils
 import networkx as nx
 
 # Used in Dijkstra
@@ -103,7 +103,7 @@ class StrategyBFS(RoutingStrategy):
 
         if least_elevation_length > max_path_length:
             length = len(least_elevation)
-            for i in range(2, length):
+            for i in range(2, length+1):
                 node = least_elevation[-i]
                 path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
                 node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
@@ -155,10 +155,7 @@ class StrategyDijkstra(RoutingStrategy):
             if v == goal:
                 break
             for u, e in successor_graph[v].items():
-                if edge_weight == "elevation_change":
-                    cost = max(0, weight(v, u, e))
-                else:
-                    cost = weight(v, u, e) + 1
+                cost = weight(v, u, e) + 1
                 if cost is None:
                     continue
 
@@ -222,7 +219,7 @@ class StrategyDijkstra(RoutingStrategy):
 
         if least_elevation_length > max_path_length:
             length = len(least_elevation)
-            for i in range(2, length):
+            for i in range(2, length+1):
                 node = least_elevation[-i]
                 path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
                 node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
@@ -344,7 +341,7 @@ class StrategyAStar(RoutingStrategy):
 
         if least_elevation_length > max_path_length:
             length = len(least_elevation)
-            for i in range(2, length):
+            for i in range(2, length+1):
                 node = least_elevation[-i]
                 path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
                 node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
