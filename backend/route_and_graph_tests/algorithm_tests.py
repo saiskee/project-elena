@@ -24,7 +24,7 @@ def dijkstra_shortest_path(start_node, dest_node):
 
 def dijkstra_min_elevation(start_node, dest_node):
     print("Dijkstra min elevation")
-    context = Context(strategies.StrategyDijkstra(graph, 50, 'min'))
+    context = Context(strategies.StrategyDijkstra(graph, 5, 'min'))
     path = context.run_strategy_route(start_node, dest_node)
     print_path(path)
     min_elevation = graph_utils.get_path_elevation(graph, path)
@@ -38,7 +38,7 @@ def dijkstra_min_elevation(start_node, dest_node):
 
 def dijkstra_max_elevation(start_node, dest_node):
     print("Dijkstra max elevation")
-    context = Context(strategies.StrategyDijkstra(graph, 50, 'max'))
+    context = Context(strategies.StrategyDijkstra(graph, 5, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
     print_path(path)
     max_elevation = graph_utils.get_path_elevation(graph, path)
@@ -59,11 +59,11 @@ def bfs_shortest_path(start_node, dest_node):
 
 def bfs_min_elevation(start_node, dest_node):
     print("BFS min elevation")
-    context_min = Context(strategies.StrategyBFS(graph, 50, 'min'))
+    context_min = Context(strategies.StrategyBFS(graph, 5, 'min'))
     path = context_min.run_strategy_route(start_node, dest_node)
     print_path(path)
     min_elevation = graph_utils.get_path_elevation(graph, path)
-    regular = Context(strategies.StrategyBFS(graph, 50, 'vanilla'))
+    regular = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
     path = regular.run_strategy_route(start_node, dest_node)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     print(min_elevation, regular_elevation)
@@ -73,13 +73,14 @@ def bfs_min_elevation(start_node, dest_node):
 
 def bfs_max_elevation(start_node, dest_node):
     print("BFS max elevation")
-    context = Context(strategies.StrategyBFS(graph, 50, 'max'))
+    context = Context(strategies.StrategyBFS(graph, 5, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
     print_path(path)
     max_elevation = graph_utils.get_path_elevation(graph, path)
     context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
+    print(max_elevation, regular_elevation)
     assert (max_elevation >= regular_elevation)
     pass
 
@@ -94,7 +95,7 @@ def a_star_shortest_path(start_node, dest_node):
 
 def a_star_min_elevation(start_node, dest_node):
     print("A star min elevation")
-    context = Context(strategies.StrategyAStar(graph, 50, 'min'))
+    context = Context(strategies.StrategyAStar(graph, 5, 'min'))
     path = context.run_strategy_route(start_node, dest_node)
     print_path(path)
     min_elevation = graph_utils.get_path_elevation(graph, path)
@@ -108,7 +109,7 @@ def a_star_min_elevation(start_node, dest_node):
 
 def a_star_max_elevation(start_node, dest_node):
     print("A star max elevation")
-    context = Context(strategies.StrategyAStar(graph, 0, 'max'))
+    context = Context(strategies.StrategyAStar(graph, 5, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
     print_path(path)
     max_elevation = graph_utils.get_path_elevation(graph, path)
@@ -144,12 +145,12 @@ def shortest_path(start_node, dest_node):
 if __name__ == "__main__":
     load_graph()
     shortest_path(0, 10)
-    # dijkstra_shortest_path(0, 10)
-    # dijkstra_min_elevation(0, 10)
-    # dijkstra_max_elevation(0, 10)
-    # bfs_shortest_path(0, 10)
-    # bfs_min_elevation(0, 10)
-    # bfs_max_elevation(0, 10)
-    # a_star_shortest_path(0, 10)
+    dijkstra_shortest_path(0, 10)
+    dijkstra_min_elevation(0, 10)
+    dijkstra_max_elevation(0, 10)
+    bfs_shortest_path(0, 10)
+    bfs_min_elevation(0, 10)
+    bfs_max_elevation(0, 10)
+    a_star_shortest_path(0, 10)
     a_star_min_elevation(0, 10)
     a_star_max_elevation(0, 10)
