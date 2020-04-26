@@ -1,8 +1,8 @@
 import heapq
 import math
-from backend.src.abstract_strategy import RoutingStrategy
-from backend.src.priority_queue import PriorityQueue
-from backend.src import graph_utils
+from abstract_strategy import RoutingStrategy
+from priority_queue import PriorityQueue
+import graph_utils
 import networkx as nx
 
 # Used in Dijkstra
@@ -365,6 +365,10 @@ def weight_function(graph, weight='length'):
             return min(attr.get(weight, 1) for attr in edge_data.values())
     elif weight == 'elevation_change':
         def weight_(source, dest, edge_data):
-            elevation_diff = graph.nodes[dest]['elevation'] - graph.nodes[source]['elevation']
-            return max(elevation_diff, 0)
+            try:
+                elevation_diff = graph.nodes[dest]['elevation'] - graph.nodes[source]['elevation']
+                return max(elevation_diff, 0)
+            except:
+                print("elevation not found: ", source, dest)
+                return 0
     return weight_
