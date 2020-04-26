@@ -164,12 +164,12 @@ export default class UserInput extends Component {
 								{/* <option>AStar (Old)</option> */}
 								<option>Breadth First Search</option>
 								<option>Dijkstra</option>
-								<option>Networkx Dijkstra</option>
+								
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>
 
-					<Form.Row>
+					<Form.Row hidden={this.state.algorithm == 'Breadth First Search'}>
 						<Form.Group as={Col} controlId="goal">
 							<Form.Label>Optimization</Form.Label>
 							<Form.Control
@@ -187,7 +187,7 @@ export default class UserInput extends Component {
 						</Form.Group>
 					</Form.Row>
 
-					<Form.Row>
+					<Form.Row hidden={this.state.algorithm == 'Breadth First Search'}>
 						<Form.Group as={Col} controlId="limit">
 							<Form.Label>Deviation Limit (x%)</Form.Label>
 							<Form.Control
