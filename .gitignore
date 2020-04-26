@@ -17,6 +17,7 @@ amherst*
 # Runtime data
 pids
 *.pid
+*.lock
 *.seed
 *.pid.lock
 *.pkl

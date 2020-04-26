@@ -48,129 +48,136 @@ const testData = {
 	],
 };
 
-let finalDistance = 0;
-let maxElevation = 0;
-let maxEleClimb = 0;
 let datas = [];
-
+let finalDistance = 0;
+let maxGrade = 0;
+let averageGrade = 0;
+let totalElevationGain = 0;
 export default class RouteData extends Component {
-	update = (dataPoints) => {
-		if (dataPoints.length === 0) {
-			return;
-		}
-		let path = dataPoints[0].path;
-		let path_data = dataPoints[0].path_data;
 
-		let label = [];
-		let elevData = [];
-		let total_Dist = 0;
-		let maxElev = 0;
+    update = (dataPoints) => {
+        
+        finalDistance = 0;
+        averageGrade = 0;
+        totalElevationGain = 0;
 
-		for (let i = 0; i < path.length; i++) {
-			let long = path[i][0];
-			let lat = path[i][1];
-			let dist = path_data[i].length;
-			let elev = path_data[i].elevation;
+        if (dataPoints.length === 0) {
+            return
+        }
+        let path = dataPoints[0].path;
+        let path_data = dataPoints[0].path_data;
 
-			total_Dist += dist;
-			if (elev > maxElev) {
-				maxElev = elev;
-			}
+        let label = [];
+        let elevData = [];
+        let total_Dist = 0;
+        maxGrade = 0;
 
-			if (i !== path.length - 1) {
-				let nextEle = path_data[i + 1].elevation;
+        for (let i = 0; i < path.length; i++) {
 
-				if (nextEle - elev > maxEleClimb) {
-					maxEleClimb = nextEle - elev;
-				}
-			}
+            let long = path[i][0];
+            let lat = path[i][1];
+            let dist = path_data[i].length;
+            let grade = path_data[i].grade;
+            let elev = path_data[i].elevation;
 
-			label.push(lat + ", " + long);
-			elevData.push(elev);
-		}
+            total_Dist += dist;
+            if (grade > maxGrade) {
+                maxGrade = grade;
+            }
 
-		console.log(elevData, testData.datasets[0].data);
+            if (i !== path.length - 1) {
+                averageGrade += grade
+                if ((path_data[i+1].elevation - elev) > 0){
+                    totalElevationGain += (path_data[i+1].elevation - elev);
+                }
+            }
+            
 
-		testData.labels = label;
-		testData.datasets[0].data = elevData;
+            label.push(lat + ", " + long);
+            elevData.push(elev);
+        }
 
-		finalDistance = total_Dist;
-		maxElevation = maxElev;
-	};
+        console.log(elevData, testData.datasets[0].data);
 
-	render() {
-		// data[0].path is {long, lat, dist, elevation}
-		let dataPoints = this.props.data;
+        testData.labels = label;
+        testData.datasets[0].data = elevData;
+        averageGrade /= path.length
+        finalDistance = total_Dist;
+    };
 
-		if (dataPoints !== datas) {
-			this.update(dataPoints);
-			datas = dataPoints;
-		}
+    render() {
 
-		return (
-			<Card
-				body
-				style={
-					finalDistance === 0
-						? {
-								width: "350px",
-								background: "rgba(0, 0, 0, 0.5)",
-								color: "#ffffff",
-								marginTop: "5%",
-								marginLeft: "5%",
-								opacity: 0,
-						  }
-						: {
-								width: "350px",
-								background: "rgba(0, 0, 0, 0.75)",
-								color: "#ffffff",
-								marginTop: "5%",
-								marginLeft: "5%",
-								opacity: 100,
-						  }
-				}
-			>
-				<Form>
-					<Form.Row>
-						<Form.Group as={Col} controlId="totalDist">
-							<Form.Label>Total Distance</Form.Label>
-							<br />
-							<Form.Label>
-								{finalDistance.toFixed(3)} Meters
-							</Form.Label>
-						</Form.Group>
-					</Form.Row>
+        // data[0].path is {long, lat, dist, elevation}
+        let dataPoints = this.props.data;
 
-					<Form.Row>
-						<Form.Group as={Col} controlId="dest">
-							<Form.Label>Maximum Elevation</Form.Label>
-							<br />
-							<Form.Label>{maxElevation}</Form.Label>
-						</Form.Group>
-					</Form.Row>
+        if (dataPoints !== datas) {
+            this.update(dataPoints);
+            datas = dataPoints;
+        }
 
-					<Form.Row>
-						<Form.Group as={Col} controlId="dest">
-							<Form.Label>
-								Greatest Elevation Climbed At Once
-							</Form.Label>
-							<br />
-							<Form.Label>{maxEleClimb}</Form.Label>
-						</Form.Group>
-					</Form.Row>
 
-					<Form.Row>
-						<Form.Group as={Col} controlId="graph">
-							<Form.Label>Elevation Graph</Form.Label>
-							<Line
-								data={testData}
-								legend={legendOpts}
-								options={options}
-							/>
-						</Form.Group>
-					</Form.Row>
-				</Form>
-			</Card>
-		);
-	}
+        return (
+            <Card
+                body
+                style={finalDistance === 0 ?
+                    {
+                        width: "350px",
+                        background: "rgba(0, 0, 0, 0.5)",
+                        color: "#ffffff",
+                        marginTop: "5%",
+                        marginLeft: "5%",
+                        opacity: 0
+                    } : {
+                        width: "350px",
+                        background: "rgba(0, 0, 0, 0.75)",
+                        color: "#ffffff",
+                        marginTop: "5%",
+                        marginLeft: "5%",
+                        opacity: 100
+                    }}
+            >
+                <Form>
+                    <Form.Row>
+                        <Form.Group as={Col}
+                                    controlId="totalDist">
+                            <Form.Label>Total Distance</Form.Label>
+                            <br/>
+                            <Form.Label>{finalDistance.toFixed(3)} Meters</Form.Label>
+                        </Form.Group>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="dest">
+                            <Form.Label>Steepest Incline</Form.Label>
+                            <br/>
+                            <Form.Label>{(maxGrade * 10).toFixed(3)} Vertical Meters per 10 Meters</Form.Label>
+                        </Form.Group>
+                    </Form.Row>
+
+                     <Form.Row>
+                        <Form.Group as={Col} controlId="dest">
+                            <Form.Label>Total Elevation Gain</Form.Label>
+                            <br/>
+                            <Form.Label>{totalElevationGain} Meters</Form.Label>
+                        </Form.Group>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="dest">
+                            <Form.Label>Average Incline</Form.Label>
+                            <br/>
+                            <Form.Label>{(averageGrade * 10).toFixed(3)} Vertical Meters per 10 Meters</Form.Label>
+                        </Form.Group>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="graph">
+                            <Form.Label>Elevation Graph</Form.Label>
+                            <Line data={testData} legend={legendOpts} options={options}/>
+                        </Form.Group>
+                    </Form.Row>
+                </Form>
+            </Card>
+        );
+    }
 }

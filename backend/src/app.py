@@ -8,7 +8,7 @@ import strategies
 
 app = Flask(__name__)
 graphs = {}
-modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)]
+modes = [("drive", graphs), ("walk", graphs), ("bike", graphs)]
 
 
 def load_graph(method, graphs):
@@ -46,27 +46,35 @@ def route():
 	"""
     data = json.loads(request.data)
     print(data)
-    # Get Lat Long of Address from Nominatim Geocoding API
-    start_latlng = ox.geocode(data['start'])
-    dest_latlng = ox.geocode(data['dest'])
 
     graph = graphs[data['method']]
     goal = data['goal']
-    start_node = ox.get_nearest_node(graph, start_latlng)
-    dest_node = ox.get_nearest_node(graph, dest_latlng)
-    
     algorithm = data['algorithm']
+
+    # Get Lat Long of Address from Nominatim Geocoding API
+    try:
+        start_node = get_node_from_address(graph, data['start'])
+        dest_node = get_node_from_address(graph, data['dest'])
+    except Exception as e:
+        return str(e), 501
+    
+
     limit = float(data['limit'])/100
     return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)
 
 
-def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', color=(255, 0, 0),
-              limit=0, goal='Minimize Elevation Gain'):
+def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Minimize Elevation Gain'):
     print("Setting up right algorithm object")
+    if len(goal.split()) > 1:
+        weight = goal.split()[1]
+        if weight.startswith('Elevation'):
+            weight = 'elevation_change'
+        else:
+            weight = 'grade'
     if goal.startswith('Min'):
-        method = 'min'
+        method = 'min ' + weight
     elif goal.startswith('Max'):
-        method = 'max'
+        method = 'max ' + weight
     else:
         method = 'vanilla'
 
@@ -87,6 +95,20 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
     #     path = context.run_strategy_route(start_node, dest_node, weight='length')
 
     print(path)
+    path, path_data = prep_path(graph, path)
+    return {'path': path, 'path_data': path_data}
+
+def get_node_from_address(graph, address):
+    try:
+        latlng = ox.geocode(address)
+        node, dist = ox.get_nearest_node(graph, latlng, return_dist=True)
+        if dist > 10000:
+            raise Exception("{} is not currently included in Routing Capabilities".format(address))
+        return node
+    except:
+        raise Exception("Could not find location '{}'".format(address))
+
+def prep_path(graph, path):
     final_path = []
     lengths_and_elevations = []
     for i in range(len(path)-1):
@@ -99,15 +121,16 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
         length = 0
         if 'length' in edge:
             length = edge['length']
+        grade = 0
+        if 'grade' in edge:
+            grade = max(0, edge['grade'])
         final_path.append((x, y))
-        lengths_and_elevations.append({'length': length, 'elevation': elevation})
+        lengths_and_elevations.append({'length': length, 'elevation': elevation, 'grade': grade})
     # Add Last Node
     lastNode = graph.nodes[nextNode]
     final_path.append((lastNode['x'], lastNode['y']))
     lengths_and_elevations.append({'length': 0, 'elevation': lastNode['elevation']})
-    # path = [[massachusetts_graph.nodes[nodeId]['x'], massachusetts_graph.nodes[nodeId]['y'], massachusetts_graph.nodes[nodeId]['elevation']] for nodeId in path]
-    return {'path': final_path, 'path_data': lengths_and_elevations, 'name': name, 'color': color}
-
+    return final_path, lengths_and_elevations
 
 # if __name__ == "__main__":
 #     # amherst books

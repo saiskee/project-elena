@@ -25,33 +25,42 @@ export default class MapView extends React.Component {
 
 		const renderColor = (item, min, max) => {
 			// get max and min grades
-			let grade = item.path_data[0].elevation; // between max and min
-			let grade_percent = ((grade - min) * 100) / (max - min);
-			return perc2color(grade_percent);
+			let grade = item.path_data[0].grade; // between max and min
+			let grade_percent = (grade - min) * 100 / (max - min)
+			return perc2color(grade_percent)
 		};
-
-		const pathLayers = [];
-		if (data[0] && data[0].path) {
-			let d = data[0];
+		
+		const pinLayers = []
+		const pathLayers = []
+		if (data[0] && data[0].path){
+			let d = data[0]
 			let min_grade = Number.POSITIVE_INFINITY;
 			let max_grade = Number.NEGATIVE_INFINITY;
-			for (let path of d.path_data) {
-				if (path.elevation < min_grade) {
-					min_grade = path.elevation;
+			for (let path of d.path_data){
+				if (path.grade < min_grade){
+					min_grade = path.grade
 				}
-				if (path.elevation > max_grade) {
-					max_grade = path.elevation;
+				if (path.grade > max_grade){
+					max_grade = path.grade
 				}
 			}
-			for (let i = 0; i < d.path.length - 1; i++) {
-				let newData = [
-					{
-						color: d.color,
-						name: d.name,
-						path: d.path.slice(i, i + 2),
-						path_data: d.path_data.slice(i, i + 2),
-					},
-				];
+			for (let i = 0; i < d.path.length; i++){
+				if (i == 0){
+					const pinData = {
+						name: "Start",
+						coordinates: d.path[i]
+					}
+					pinLayers.push(pinData)
+				}
+				else if (i == d.path.length - 1){
+					const pinData = {
+						name: "Destination",
+						coordinates: d.path[i]
+					}
+					pinLayers.push(pinData)
+					continue;
+				}
+				let newData = [{color: d.color, name: d.name, path: d.path.slice(i, i+2), path_data: d.path_data.slice(i, i+2)}];
 				const newLayer = new PathLayer({
 					id: "path-layer" + String(i),
 					data: newData,
@@ -63,6 +72,37 @@ export default class MapView extends React.Component {
 				pathLayers.push(newLayer);
 			}
 		}
+
+
+
+
+		const ICON_MAPPING = {
+			marker: {x: 0, y: 0, width: 32, height: 32, mask: true}
+		  };
+		
+		for (let i = 0; i < 2; i++){
+			pinLayers[i] = new IconLayer({
+				id: "icon-layer",
+				data:pinLayers[i],
+				pickable: true,
+				// iconAtlas and iconMapping are required
+				// getIcon: return a string
+				getIcon: d => ({
+					url: "https://img.icons8.com/color/50/000000/map-pin.png",
+					width: 128,
+					height: 128,
+					anchorY: 128
+				  }),
+			
+				//getIcon: d => 'marker',
+	
+				sizeScale: 15,
+				getPosition: d => d.coordinates,
+				getSize: d => 5,
+				// getColor: d => [d.name=='Start' ? 255 : 0, d.name=='Destination' ? 255 : 0, 0],
+			});
+		}
+		
 
 		let style = {
 			top: "auto",
@@ -79,7 +119,7 @@ export default class MapView extends React.Component {
 					this.props._onViewStateChange(v);
 				}}
 				controller={true}
-				layers={pathLayers}
+				layers={ [...pathLayers, ...pinLayers]}
 				width={this.props.width}
 				height={this.props.height}
 				style={style}

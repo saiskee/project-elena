@@ -16,11 +16,11 @@ class StrategyBFS(RoutingStrategy):
         self.method = method
 
     def get_route(self, source, goal):
-        if self.method == 'vanilla':
+        if self.method.startswith('vanilla'):
             return self.vanilla_shortest_path(source, goal)
-        if self.method == 'min':
+        elif self.method.startswith('min'):
             return self.minimum_elevation(source, goal)
-        else:
+        elif self.method.startswith('max'):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, start, goal, edge_weight='length'):
@@ -53,7 +53,7 @@ class StrategyBFS(RoutingStrategy):
         # Return empty list if path doesn't exist
         return []
 
-    def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def maximum_elevation(self, source, goal):
         # print("calling maximizing elevation")
         graph = self.graph
 
@@ -90,7 +90,7 @@ class StrategyBFS(RoutingStrategy):
         max_path.append(goal)
         return max_path
 
-    def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def minimum_elevation(self, source, goal):
         # print("calling minimum elevation")
         graph = self.graph
 
@@ -98,7 +98,7 @@ class StrategyBFS(RoutingStrategy):
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
-        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
+        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='grade')
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
         if least_elevation_length > max_path_length:
@@ -124,9 +124,10 @@ class StrategyDijkstra(RoutingStrategy):
     def get_route(self, source, goal):
         if self.method == 'vanilla':
             return self.vanilla_shortest_path(source, goal)
-        if self.method == 'min':
-            return self.minimum_elevation(source, goal)
-        else:
+        elif self.method.startswith('min'):
+            weight = self.method.split()[1]
+            return self.minimum_elevation(source, goal, weight)
+        elif self.method.startswith('max'):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
@@ -169,7 +170,7 @@ class StrategyDijkstra(RoutingStrategy):
                     paths[u] = paths[v] + [u]
         return paths[goal]
 
-    def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def maximum_elevation(self, source, goal):
         # print("calling maximizing elevation")
         graph = self.graph
 
@@ -206,7 +207,7 @@ class StrategyDijkstra(RoutingStrategy):
         max_path.append(goal)
         return max_path
 
-    def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def minimum_elevation(self, source, goal, weight):
         # print("calling minimum elevation")
         graph = self.graph
 
@@ -214,7 +215,7 @@ class StrategyDijkstra(RoutingStrategy):
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
-        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
+        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
         if least_elevation_length > max_path_length:
@@ -239,9 +240,10 @@ class StrategyAStar(RoutingStrategy):
     def get_route(self, source, goal):
         if self.method == 'vanilla':
             return self.vanilla_shortest_path(source, goal)
-        if self.method == 'min':
-            return self.minimum_elevation(source, goal)
-        else:
+        elif self.method.startswith('min'):
+            weight = self.method.split()[1]
+            return self.minimum_elevation(source, goal, weight)
+        elif self.method.startswith('max'):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
@@ -291,7 +293,7 @@ class StrategyAStar(RoutingStrategy):
                 enqueued[neighbor] = ncost, h
                 push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
-    def maximum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def maximum_elevation(self, source, goal):
         # print("calling maximizing elevation")
         graph = self.graph
 
@@ -328,15 +330,14 @@ class StrategyAStar(RoutingStrategy):
         max_path.append(goal)
         return max_path
 
-    def minimum_elevation(self, source, goal, edge_weight='elevation_change'):
+    def minimum_elevation(self, source, goal, weight):
         # print("calling minimum elevation")
         graph = self.graph
-
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
-        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
+        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
         if least_elevation_length > max_path_length:
@@ -360,9 +361,16 @@ class StrategyAStar(RoutingStrategy):
 
 
 def weight_function(graph, weight='length'):
+
     if weight == 'length':
         def weight_(source, dest, edge_data):
             return min(attr.get(weight, 1) for attr in edge_data.values())
+    elif weight == 'grade':
+        def weight_(source, dest, edge_data):
+            try:
+                return max(0, edge_data['grade'])
+            except:
+                return 0
     elif weight == 'elevation_change':
         def weight_(source, dest, edge_data):
             try:
