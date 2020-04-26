@@ -48,14 +48,18 @@ const testData = {
     ]
 };
 
-let finalDistance = 0;
-let maxElevation = 0;
-let maxEleClimb = 0;
 let datas = [];
-
+let finalDistance = 0;
+let maxGrade = 0;
+let averageGrade = 0;
+let totalElevationGain = 0;
 export default class RouteData extends Component {
 
     update = (dataPoints) => {
+        
+        finalDistance = 0;
+        averageGrade = 0;
+        totalElevationGain = 0;
 
         if (dataPoints.length === 0) {
             return
@@ -66,27 +70,28 @@ export default class RouteData extends Component {
         let label = [];
         let elevData = [];
         let total_Dist = 0;
-        let maxElev = 0;
+        maxGrade = 0;
 
         for (let i = 0; i < path.length; i++) {
 
             let long = path[i][0];
             let lat = path[i][1];
             let dist = path_data[i].length;
+            let grade = path_data[i].grade;
             let elev = path_data[i].elevation;
 
             total_Dist += dist;
-            if (elev > maxElev) {
-                maxElev = elev;
+            if (grade > maxGrade) {
+                maxGrade = grade;
             }
 
             if (i !== path.length - 1) {
-                let nextEle = path_data[i + 1].elevation;
-
-                if (nextEle - elev > maxEleClimb) {
-                    maxEleClimb = nextEle - elev;
+                averageGrade += grade
+                if ((path_data[i+1].elevation - elev) > 0){
+                    totalElevationGain += (path_data[i+1].elevation - elev);
                 }
             }
+            
 
             label.push(lat + ", " + long);
             elevData.push(elev);
@@ -96,9 +101,8 @@ export default class RouteData extends Component {
 
         testData.labels = label;
         testData.datasets[0].data = elevData;
-
+        averageGrade /= path.length
         finalDistance = total_Dist;
-        maxElevation = maxElev;
     };
 
     render() {
@@ -144,17 +148,25 @@ export default class RouteData extends Component {
 
                     <Form.Row>
                         <Form.Group as={Col} controlId="dest">
-                            <Form.Label>Maximum Elevation</Form.Label>
+                            <Form.Label>Steepest Incline</Form.Label>
                             <br/>
-                            <Form.Label>{maxElevation}</Form.Label>
+                            <Form.Label>{(maxGrade * 10).toFixed(3)} Vertical Meters per 10 Meters</Form.Label>
                         </Form.Group>
                     </Form.Row>
 
                      <Form.Row>
                         <Form.Group as={Col} controlId="dest">
-                            <Form.Label>Greatest Elevation Climbed At Once</Form.Label>
+                            <Form.Label>Total Elevation Gain</Form.Label>
                             <br/>
-                            <Form.Label>{maxEleClimb}</Form.Label>
+                            <Form.Label>{totalElevationGain} Meters</Form.Label>
+                        </Form.Group>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="dest">
+                            <Form.Label>Average Incline</Form.Label>
+                            <br/>
+                            <Form.Label>{(averageGrade * 10).toFixed(3)} Vertical Meters per 10 Meters</Form.Label>
                         </Form.Group>
                     </Form.Row>
 
