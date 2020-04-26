@@ -1,8 +1,8 @@
 import heapq
 import math
-from backend.src.abstract_strategy import RoutingStrategy
-from backend.src.priority_queue import PriorityQueue
-from backend.src import graph_utils
+from abstract_strategy import RoutingStrategy
+from priority_queue import PriorityQueue
+import graph_utils
 import networkx as nx
 
 # Used in Dijkstra

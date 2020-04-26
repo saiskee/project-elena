@@ -8,7 +8,7 @@ import strategies
 
 app = Flask(__name__)
 graphs = {}
-modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)] 
+modes = [("drive", graphs)] #, ("walk", graphs), ("bike", graphs)]
 
 
 def load_graph(method, graphs):
@@ -62,6 +62,7 @@ def route():
 
 def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', color=(255, 0, 0),
               limit=0, goal='Minimize Elevation Gain'):
+    print("Setting up right algorithm object")
     if goal.startswith('Min'):
         method = 'min'
     elif goal.startswith('Max'):
@@ -108,17 +109,19 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', name='Route', col
     return {'path': final_path, 'path_data': lengths_and_elevations, 'name': name, 'color': color}
 
 
-if __name__ == "__main__":
-    # amherst books
-    start_lat = 42.375801
-    start_long = -72.519547
-    # CS building
-    end_lat = 42.395611
-    end_long = -72.531612
-    # other_get_route(start_lat, start_long, end_lat, end_long)
-    start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
-    end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
-    print("Calling get_route from {} to {}".format(start_node, end_node))
-    get_route(graphs['drive'], start_node, end_node, algorithm='Dijkstra', name='Route', color=(255, 0, 0), limit=0,
-              goal='Min')
+# if __name__ == "__main__":
+#     # amherst books
+#     start_lat = 42.375801
+#     start_long = -72.519547
+#     # CS building
+#     end_lat = 42.395611
+#     end_long = -72.531612
+#     # other_get_route(start_lat, start_long, end_lat, end_long)
+#     start_node = ox.get_nearest_node(graphs['drive'], (start_lat, start_long))
+#     end_node = ox.get_nearest_node(graphs['drive'], (end_lat, end_long))
+#     print("Calling get_route from {} to {}".format(start_node, end_node))
+#     get_route(graphs['drive'], start_node, end_node, algorithm='Dijkstra', name='Route', color=(255, 0, 0), limit=0,
+#               goal='Min')
+
+# harvard to TD garden
 
