@@ -1,4 +1,3 @@
-  
 import React, { Component } from "react";
 
 import Form from "react-bootstrap/Form";
@@ -6,7 +5,6 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
-
 
 export default class UserInput extends Component {
 	state = {
@@ -16,7 +14,7 @@ export default class UserInput extends Component {
 		limit: "0",
 		algorithm: "AStar",
 		loading: false,
-		method: "drive"
+		method: "drive",
 	};
 
 	handleChange = (e) => {
@@ -28,7 +26,9 @@ export default class UserInput extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		// console.log(this.state);
-		this.setState({ loading: true })
+		this.setState({ loading: true });
+
+		// eslint-disable-next-line
 		const resp = {
 			path: [
 				[-71.1188219, 42.373674],
@@ -83,23 +83,21 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		};
-		
-		// this.props.updateData(resp); 
-		fetch('/route',{
-			method: 'POST',
-			body: JSON.stringify(this.state)
-		})
-		.then(async res => {
-			let data = await res.json();
-			// console.log(data);
-			this.props.updateData(data);
-			this.setState({ loading: false })
-		})
-		.catch(err => {
-			console.log(err);
-		})
+		// this.props.updateData(resp);
 
-	}
+		fetch("/route", {
+			method: "POST",
+			body: JSON.stringify(this.state),
+		})
+			.then(async (res) => {
+				let data = await res.json();
+				this.props.updateData(data);
+				this.setState({ loading: false });
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	render() {
 		return (
@@ -109,8 +107,8 @@ export default class UserInput extends Component {
 					width: "400px",
 					background: "rgba(0, 0, 0, 0.5)",
 					color: "#ffffff",
-					marginTop: "5%",
-					marginLeft: "5%"
+					marginTop: "2.5%",
+					marginLeft: "5%",
 				}}
 			>
 				<Form
@@ -162,7 +160,6 @@ export default class UserInput extends Component {
 								<option>Breadth First Search</option>
 								<option>Dijkstra</option>
 								<option>Networkx Dijkstra</option>
-								
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>
@@ -217,9 +214,11 @@ export default class UserInput extends Component {
 
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
-							{this.state.loading ? <Spinner animation="border" /> : "Submit"}
-							{/* <Spinner animation="border" /> */}
-							
+							{this.state.loading ? (
+								<Spinner animation="border" />
+							) : (
+								"Submit"
+							)}
 						</Button>
 					</Form.Row>
 				</Form>
