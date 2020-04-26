@@ -218,7 +218,6 @@ export default class UserInput extends Component {
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>
-
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
 							{this.props.loading ? (
