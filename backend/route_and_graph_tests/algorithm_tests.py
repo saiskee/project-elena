@@ -5,6 +5,7 @@ from backend.src import strategies
 from backend.src import graph_utils
 
 graph = None
+limit = 50
 
 
 def load_graph():
@@ -15,157 +16,160 @@ def load_graph():
 
 
 def dijkstra_shortest_path(start_node, dest_node):
-    print("Dijkstra shortest path")
     context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Dijkstra shortest path", path)
+    print("\n")
 
 
 def dijkstra_min_elevation(start_node, dest_node):
     print("Dijkstra min elevation")
-    limit = 1
     context = Context(strategies.StrategyDijkstra(graph, limit, 'min'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
+
     context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert (elevation <= regular_elevation)
 
 
 def dijkstra_max_elevation(start_node, dest_node):
     print("Dijkstra max elevation")
-    limit = 1
     context = Context(strategies.StrategyDijkstra(graph, limit, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
+
     context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert(elevation >= regular_elevation)
 
 
 def bfs_shortest_path(start_node, dest_node):
-    print("BFS shortest path")
     context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("BFS shortest path", path)
+    print("\n")
 
 
 def bfs_min_elevation(start_node, dest_node):
     print("BFS min elevation")
-    limit = 1
     context_min = Context(strategies.StrategyBFS(graph, limit, 'min'))
     path = context_min.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
+
     regular = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
     path = regular.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert (elevation <= regular_elevation)
 
 
 def bfs_max_elevation(start_node, dest_node):
     print("BFS max elevation")
-    limit = 1
     context = Context(strategies.StrategyBFS(graph, limit, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
+
     context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert (elevation >= regular_elevation)
 
 
 def a_star_shortest_path(start_node, dest_node):
-    print("A star shortest path")
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("A star shortest path", path)
 
 
 def a_star_min_elevation(start_node, dest_node):
     print("A star min elevation")
-    limit = 1
     context = Context(strategies.StrategyAStar(graph, limit, 'min'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("min path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
+    print("vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert (elevation <= regular_elevation)
 
 
 def a_star_max_elevation(start_node, dest_node):
     print("A star max elevation")
-    limit = 1
     context = Context(strategies.StrategyAStar(graph, limit, 'max'))
     path = context.run_strategy_route(start_node, dest_node)
-    print_path(path)
+    print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
+
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
     regular_elevation = graph_utils.get_path_elevation(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
-    print(regular_path_length, max_length, max_path_length)
-    print(elevation, regular_elevation)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    print("\n")
     assert (max_path_length <= max_length)
     assert (elevation >= regular_elevation)
-
-
-def print_path(path):
-    return_path = []
-    return_nodes = []
-    for node in path:
-        return_nodes.append(node)
-        # should be x and y
-        lat = graph.nodes[node]["y"]
-        lng = graph.nodes[node]["x"]
-        return_path.append({'lat': lat, 'lng': lng})
-    print(return_nodes)
-    return {"nodes": return_path}
 
 
 def shortest_path(start_node, dest_node):
     print("networkx shortest path")
     route = nx.shortest_path(graph, start_node, dest_node, weight='length')
-    print_path(route)
+    print(route)
     return route
 
 

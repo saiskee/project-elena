@@ -1,8 +1,8 @@
 import heapq
 import math
-from abstract_strategy import RoutingStrategy
-from priority_queue import PriorityQueue
-import graph_utils
+from backend.src.abstract_strategy import RoutingStrategy
+from backend.src.priority_queue import PriorityQueue
+from backend.src import graph_utils
 import networkx as nx
 
 # Used in Dijkstra
@@ -96,7 +96,7 @@ class StrategyBFS(RoutingStrategy):
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        max_path_length = shortest_path_length + shortest_path_length * self.limit
+        max_path_length = shortest_path_length * (1 + self.limit)
 
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
@@ -212,7 +212,7 @@ class StrategyDijkstra(RoutingStrategy):
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        max_path_length = shortest_path_length + shortest_path_length * self.limit
+        max_path_length = shortest_path_length * (1 + self.limit)
 
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
@@ -334,7 +334,7 @@ class StrategyAStar(RoutingStrategy):
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        max_path_length = shortest_path_length + shortest_path_length * self.limit
+        max_path_length = shortest_path_length * (1 + self.limit)
 
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='elevation_change')
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
@@ -363,7 +363,8 @@ def weight_function(graph, weight='length'):
     if weight == 'length':
         def weight_(source, dest, edge_data):
             return min(attr.get(weight, 1) for attr in edge_data.values())
-    elif weight =='elevation_change':
+    elif weight == 'elevation_change':
         def weight_(source, dest, edge_data):
-            return max(0, min(attr.get(weight, 1) for attr in edge_data.values()))
+            elevation_diff = graph.nodes[dest]['elevation'] - graph.nodes[source]['elevation']
+            return max(elevation_diff, 0)
     return weight_

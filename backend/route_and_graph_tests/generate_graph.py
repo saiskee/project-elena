@@ -14,10 +14,6 @@ def create_graph():
         G.nodes[node_num]['x'] = pos[node_num][0] * 100
         G.nodes[node_num]['y'] = pos[node_num][1] * 100
         G.nodes[node_num]['elevation'] = random.randint(1, 50)
-        # print(G.in_edges(node_num))
-        # print(G.out_edges(node_num))
-        # print(G.nodes[node_num])
-        # print("\n")
         edges_in = {}
         edges_out = {}
         for edge in G.in_edges(node_num):
