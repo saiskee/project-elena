@@ -142,7 +142,7 @@ export default class RouteData extends Component {
                                     controlId="totalDist">
                             <Form.Label>Total Distance</Form.Label>
                             <br/>
-                            <Form.Label>{finalDistance.toFixed(3)} Meters</Form.Label>
+                            <Form.Label>{(finalDistance/1000).toFixed(3)} Kilometers</Form.Label>
                         </Form.Group>
                     </Form.Row>
 
