@@ -1,6 +1,6 @@
 import React from "react";
 import DeckGL from "@deck.gl/react";
-import { PathLayer } from "@deck.gl/layers";
+import { PathLayer, IconLayer } from "@deck.gl/layers";
 import { StaticMap } from "react-map-gl";
 
 // Set your mapbox access token here
@@ -45,14 +45,14 @@ export default class MapView extends React.Component {
 				}
 			}
 			for (let i = 0; i < d.path.length; i++){
-				if (i == 0){
+				if (i === 0){
 					const pinData = {
 						name: "Start",
 						coordinates: d.path[i]
 					}
 					pinLayers.push(pinData)
 				}
-				else if (i == d.path.length - 1){
+				else if (i === d.path.length - 1){
 					const pinData = {
 						name: "Destination",
 						coordinates: d.path[i]
@@ -72,17 +72,10 @@ export default class MapView extends React.Component {
 				pathLayers.push(newLayer);
 			}
 		}
-
-
-
-
-		const ICON_MAPPING = {
-			marker: {x: 0, y: 0, width: 32, height: 32, mask: true}
-		  };
 		
 		for (let i = 0; i < 2; i++){
 			pinLayers[i] = new IconLayer({
-				id: "icon-layer",
+				id: "pin-layer",
 				data:pinLayers[i],
 				pickable: true,
 				// iconAtlas and iconMapping are required

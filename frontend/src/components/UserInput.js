@@ -13,7 +13,6 @@ export default class UserInput extends Component {
 		goal: "Minimize Elevation Gain",
 		limit: "0",
 		algorithm: "AStar",
-		loading: false,
 		method: "drive",
 	};
 
@@ -26,7 +25,8 @@ export default class UserInput extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		// console.log(this.state);
-		this.setState({ loading: true });
+		// this.setState({ loading: true });
+		this.updateLoading()
 
 		// eslint-disable-next-line
 		const resp = {
@@ -96,8 +96,13 @@ export default class UserInput extends Component {
 			})
 			.catch((err) => {
 				console.log(err);
+				this.props.updateErrorMsg(err.toString())
 			});
 	};
+
+	updateLoading = () => {
+		this.props.updateLoading()
+	}
 
 	render() {
 		return (
@@ -216,7 +221,7 @@ export default class UserInput extends Component {
 
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
-							{this.state.loading ? (
+							{this.props.loading ? (
 								<Spinner animation="border" />
 							) : (
 								"Submit"

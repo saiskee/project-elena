@@ -28,6 +28,7 @@ class App extends Component {
 			marginTop: "1vh",
 			errorMsg: "No errors",
 			showError: false,
+			loading: false
 		};
 		this._onViewStateChange = this._onViewStateChange.bind(this);
 	}
@@ -53,6 +54,8 @@ class App extends Component {
 		this.setState({ viewport: viewport });
 		console.log(this.state);
 
+		this.updateLoading()
+
 		// Required to update viewport
 		this.updateHeight();
 	};
@@ -71,11 +74,21 @@ class App extends Component {
 
 	updateErrorMsg = (msg) => {
 		this.setState({ errorMsg: msg, showError: true });
+		// this.updateLoading()
 		console.log("click");
 	};
 
+	updateLoading = () => {
+		console.log("updaing loading")
+		let bool = this.state.loading
+		this.setState({ loading: !bool });
+		console.log(this.state)
+	}
+
 	clearError = () => {
+		console.log("clear errors")
 		this.setState({ errorMsg: "No errors", showError: false });
+		this.updateLoading()
 	};
 
 	calculateZoom = (path) => {
@@ -175,6 +188,8 @@ class App extends Component {
 							updateData={this.updateData}
 							payload={this.state}
 							updateErrorMsg={this.updateErrorMsg}
+							loading={this.state.loading}
+							updateLoading = {this.updateLoading}
 						/>
 					</div>
 
@@ -182,7 +197,7 @@ class App extends Component {
 						style={{
 							position: "absolute",
 							right: "5%",
-							top: "15%",
+							top: "12.5%",
 						}}
 					>
 						<RouteData
