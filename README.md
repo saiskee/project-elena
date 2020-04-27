@@ -28,7 +28,7 @@ Once the development server has started, the webapp development version will ope
 ## How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
-<center> _Figure 1. The Elena Webapp Graphical User Interface_ </center>
+<p align="center"> _Figure 1. The Elena Webapp Graphical User Interface_ </p>
 
 Elena includes a host of features that allow for maximum end user control. These include:
 - Algorithm choice: Choose between A Star, Breadth First Search, or Dijkstra Search for your routing algorithm
