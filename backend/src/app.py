@@ -5,6 +5,7 @@ import networkx as nx
 import pickle as pkl
 from context import Context
 import strategies
+import webbrowser
 
 app = Flask(__name__)
 graphs = {}
@@ -25,6 +26,8 @@ for mode in modes:
 
 
 print("Cached Graphs Loaded!")
+
+webbrowser.open('http://localhost:5000', new=2)
 
 
 @app.route('/', methods=['GET'])
