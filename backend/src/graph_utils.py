@@ -1,3 +1,4 @@
+# Calculates the path length of a given path
 def get_path_length(graph, path):
     length = 0
     for i in range(len(path)-1):
@@ -5,6 +6,7 @@ def get_path_length(graph, path):
     return length
 
 
+# Calculates the elevation of a given path
 def get_path_elevation(graph, path):
     elevation = 0
     for i in range(len(path)-1):
@@ -12,6 +14,7 @@ def get_path_elevation(graph, path):
     return elevation
 
 
+# Returns a weight function given a weight type: length, grade, and elevation_change
 def weight_function(graph, weight='length'):
     if weight == 'length':
         def weight_(source, dest, edge_data):
