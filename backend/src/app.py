@@ -35,15 +35,16 @@ def index():
 @app.route('/route', methods=['POST'])
 def route():
     """
-	request.data: {
-		start: "Start Address Lane"
-		dest: "Dest"
-		goal: "Minimize Elevation Gain / Maximize Elevation Gain"
-		limit: "##"
-		algorithm: "ucs/astar/bfs/..."
+    request.data: {
+        start: "Start Address Lane"
+        dest: "Dest"
+        goal: "Minimize Elevation Gain / Maximize Elevation Gain"
+        limit: "##"
+        algorithm: "ucs/astar/bfs/..."
         method: "drive" / walk / bike
-	}
-	"""
+    }
+    """
+
     data = json.loads(request.data)
     print(data)
 
@@ -57,7 +58,6 @@ def route():
         dest_node = get_node_from_address(graph, data['dest'])
     except Exception as e:
         return str(e), 501
-    
 
     limit = float(data['limit'])/100
     return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)
@@ -90,13 +90,13 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Mi
         context = Context(strategies.StrategyAStar(graph, limit, method))
         path = context.run_strategy_route(start_node, dest_node)
 
-    # elif algorithm == 'Networkx Dijkstra':
-    #     context = Context(strategies.StrategyDijkstra(graph))
-    #     path = context.run_strategy_route(start_node, dest_node, weight='length')
+    elif algorithm == 'Networkx Dijkstra':
+        path = nx.shortest_path(start_node, dest_node, weight='length')
 
     print(path)
     path, path_data = prep_path(graph, path)
     return {'path': path, 'path_data': path_data}
+
 
 def get_node_from_address(graph, address):
     try:
@@ -107,6 +107,7 @@ def get_node_from_address(graph, address):
         return node
     except:
         raise Exception("Could not find location '{}'".format(address))
+
 
 def prep_path(graph, path):
     final_path = []

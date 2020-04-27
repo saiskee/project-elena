@@ -9,16 +9,14 @@ class RoutingStrategy(ABC):
     The Context uses this interface to call the algorithm defined by Concrete
     Strategies.
     """
-    def __init__(self, graph):
+    def __init__(self, graph, limit, method):
         self.graph = graph
+        self.limit = limit
+        self.method = method
 
     @abstractmethod
     def get_route(self, start, goal):
         pass
 
-    # Not implemented by all child classes
-    # @abstractmethod
-    # def backtrack(self):
-    #     pass
 
 
