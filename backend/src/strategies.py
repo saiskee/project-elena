@@ -1,21 +1,54 @@
 import heapq
-import math
 from abstract_strategy import RoutingStrategy
-from priority_queue import PriorityQueue
 import graph_utils
 import networkx as nx
-
-# Used in Dijkstra
 from itertools import count
 
 
 class StrategyBFS(RoutingStrategy):
+    """
+    A class used to represent a BFS path finding strategy
+
+    ...
+
+    Attributes
+    ----------
+    graph : nx.multidigraph
+       a formatted string to print out what the animal says
+    limit : int
+       the multiply factor on the path length
+    method : str
+       the type of shortest path algorithm to run
+
+    Methods
+    -------
+    get_route(source, goal)
+       calls the appropriate routing algorithm
+    vanilla_shortest_path(start, goal)
+       calculate the shortest path
+    maximum_elevation(start, goal)
+       calculate the shortest path while maximizing elevation
+    minimum_elevation(start, goal)
+       calculate the shortest path while minimizing elevation
+    """
     def __init__(self, graph, limit, method):
-        self.graph = graph
-        self.limit = limit
-        self.method = method
+        super().__init__(graph, limit, method)
 
     def get_route(self, source, goal):
+        """Gets the route that is set by the "method" parameter.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         if self.method.startswith('vanilla'):
             return self.vanilla_shortest_path(source, goal)
         elif self.method.startswith('min'):
@@ -23,37 +56,64 @@ class StrategyBFS(RoutingStrategy):
         elif self.method.startswith('max'):
             return self.maximum_elevation(source, goal)
 
-    def vanilla_shortest_path(self, start, goal, edge_weight='length'):
+    def vanilla_shortest_path(self, source, goal, edge_weight='length'):
+        """Gets the shortest path given by BFS algorithm.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        edge_weight : string, optional
+            defaults to 'length'
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
         graph = self.graph
         explored = []
 
-        queue = [[start]]
+        # start the BFS queue
+        queue = [[source]]
 
-        if start == goal:
+        # return if start node is the end node
+        if source == goal:
             return [goal]
 
         # keeps looping until all possible paths have been checked
         while queue:
             path = queue.pop(0)
             node = path[-1]
-
+            # add neighboring nodes if they haven't been explored
             if node not in explored:
                 neighbors = graph.neighbors(node)
-
                 for neighbor in neighbors:
                     new_path = list(path)
                     new_path.append(neighbor)
                     queue.append(new_path)
-
                     if neighbor == goal:
                         return new_path
-
                 explored.append(node)
-
         # Return empty list if path doesn't exist
         return []
 
     def maximum_elevation(self, source, goal):
+        """Gets the shortest path within a path length limit, optimizing for maximum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling maximizing elevation")
         graph = self.graph
 
@@ -63,20 +123,21 @@ class StrategyBFS(RoutingStrategy):
 
         max_path = []
         length_allowance = max_path_length - shortest_path_length
-        for i in range(0, len(shortest_path) - 1):
 
+        # Iterate through each pair of nodes and find a subpath that can maximize elevation within a path
+        # length constraint
+        for i in range(0, len(shortest_path) - 1):
             cur_node = shortest_path[i]
             next_node = shortest_path[i + 1]
             min_distance = graph[cur_node][next_node][0]['length']
             allowance = length_allowance * (min_distance / shortest_path_length)
-
             highest_elevation = -1
             best_path = []
-            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
 
+            # find all paths from cur_node to next_node and get the path length and elevation, add to original path
+            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
                 path_elevation = graph_utils.get_path_elevation(graph, path)
                 path_length = graph_utils.get_path_length(graph, path)
-
                 if path_elevation > highest_elevation:
                     if path_length <= allowance + min_distance:
                         highest_elevation = path_elevation
@@ -87,10 +148,26 @@ class StrategyBFS(RoutingStrategy):
 
             for j in best_path[:-1]:
                 max_path.append(j)
+
         max_path.append(goal)
         return max_path
 
     def minimum_elevation(self, source, goal):
+        """Gets the shortest path within a path length limit, optimizing for minimum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        weight : string
+            type of weight to use
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling minimum elevation")
         graph = self.graph
 
@@ -98,6 +175,8 @@ class StrategyBFS(RoutingStrategy):
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
+        # calculate the smallest elevation path using elevation/grade
+        # should be the same as regular BFS because BFS doesn't use edge weights
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='grade')
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
@@ -115,13 +194,50 @@ class StrategyBFS(RoutingStrategy):
 
 
 class StrategyDijkstra(RoutingStrategy):
+    """
+    A class used to represent a BFS path finding strategy
+
+    ...
+
+    Attributes
+    ----------
+    graph : nx.multidigraph
+       a formatted string to print out what the animal says
+    limit : int
+       the multiply factor on the path length
+    method : str
+       the type of shortest path algorithm to run
+
+    Methods
+    -------
+    get_route(source, goal)
+       calls the appropriate routing algorithm
+    vanilla_shortest_path(start, goal)
+       calculate the shortest path
+    maximum_elevation(start, goal)
+       calculate the shortest path while maximizing elevation
+    minimum_elevation(start, goal)
+       calculate the shortest path while minimizing elevation
+    """
     # Assume Limit is some percentage of the shortest path [0,1]
     def __init__(self, graph, limit, method):
-        self.graph = graph
-        self.limit = limit
-        self.method = method
+        super().__init__(graph, limit, method)
 
     def get_route(self, source, goal):
+        """Gets the route that is set by the "method" parameter.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         if self.method == 'vanilla':
             return self.vanilla_shortest_path(source, goal)
         elif self.method.startswith('min'):
@@ -131,9 +247,24 @@ class StrategyDijkstra(RoutingStrategy):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
+        """Gets the shortest path given by Dijkstra's algorithm.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        edge_weight : string, optional
+            defaults to 'length'
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
         # print("calling vanilla shortest path")
         graph = self.graph
-        weight = weight_function(graph, edge_weight)
+        weight = graph_utils.weight_function(graph, edge_weight)
         paths = {source: [source]}
         successor_graph = graph._succ if graph.is_directed() else graph._adj
 
@@ -171,26 +302,41 @@ class StrategyDijkstra(RoutingStrategy):
         return paths[goal]
 
     def maximum_elevation(self, source, goal):
+        """Gets the shortest path within a path length limit, optimizing for maximum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling maximizing elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
-
         max_path = []
         length_allowance = max_path_length - shortest_path_length
-        for i in range(0, len(shortest_path) - 1):
 
+        # Iterate through each pair of nodes and find a subpath that can maximize elevation within a path
+        # length constraint
+        for i in range(0, len(shortest_path) - 1):
             cur_node = shortest_path[i]
             next_node = shortest_path[i + 1]
             min_distance = graph[cur_node][next_node][0]['length']
             allowance = length_allowance * (min_distance / shortest_path_length)
-
             highest_elevation = -1
             best_path = []
-            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
 
+            # find all paths from cur_node to next_node and get the path length and elevation, add to original path
+            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
                 path_elevation = graph_utils.get_path_elevation(graph, path)
                 path_length = graph_utils.get_path_length(graph, path)
 
@@ -208,6 +354,21 @@ class StrategyDijkstra(RoutingStrategy):
         return max_path
 
     def minimum_elevation(self, source, goal, weight):
+        """Gets the shortest path within a path length limit, optimizing for minimum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        weight : string
+            type of weight to use
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling minimum elevation")
         graph = self.graph
 
@@ -215,9 +376,12 @@ class StrategyDijkstra(RoutingStrategy):
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
+        # calculate the smallest elevation path using elevation/grade
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
+        # if the path with smallest elevation is longer than the maximum allowed path, go through each node
+        # and find the shortest path from the end to the beginning, thereby optimizing for elevation and path length
         if least_elevation_length > max_path_length:
             length = len(least_elevation)
             for i in range(2, length+1):
@@ -232,12 +396,49 @@ class StrategyDijkstra(RoutingStrategy):
 
 
 class StrategyAStar(RoutingStrategy):
+    """
+    A class used to represent a BFS path finding strategy
+
+    ...
+
+    Attributes
+    ----------
+    graph : nx.multidigraph
+       a formatted string to print out what the animal says
+    limit : int
+       the multiply factor on the path length
+    method : str
+       the type of shortest path algorithm to run
+
+    Methods
+    -------
+    get_route(source, goal)
+       calls the appropriate routing algorithm
+    vanilla_shortest_path(start, goal)
+       calculate the shortest path
+    maximum_elevation(start, goal)
+       calculate the shortest path while maximizing elevation
+    minimum_elevation(start, goal)
+       calculate the shortest path while minimizing elevation
+    """
     def __init__(self, graph, limit, method):
-        self.graph = graph
-        self.limit = limit
-        self.method = method
+        super().__init__(graph, limit, method)
 
     def get_route(self, source, goal):
+        """Gets the route that is set by the "method" parameter.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         if self.method == 'vanilla':
             return self.vanilla_shortest_path(source, goal)
         elif self.method.startswith('min'):
@@ -247,13 +448,28 @@ class StrategyAStar(RoutingStrategy):
             return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
+        """Gets the shortest path given by A* algorithm.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        edge_weight : string, optional
+            defaults to 'length'
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
         push = heapq.heappush
         pop = heapq.heappop
 
         graph = self.graph
         successor_graph = graph._succ if graph.is_directed() else graph._adj
 
-        weight = weight_function(graph, edge_weight)
+        weight = graph_utils.weight_function(graph, edge_weight)
         c = count()
         queue = [(0, next(c), source, 0, None)]
 
@@ -294,26 +510,41 @@ class StrategyAStar(RoutingStrategy):
                 push(queue, (ncost + h, next(c), neighbor, ncost, curnode))
 
     def maximum_elevation(self, source, goal):
+        """Gets the shortest path within a path length limit, optimizing for maximum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling maximizing elevation")
         graph = self.graph
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
-
         max_path = []
         length_allowance = max_path_length - shortest_path_length
-        for i in range(0, len(shortest_path) - 1):
 
+        # Iterate through each pair of nodes and find a subpath that can maximize elevation within a path
+        # length constraint
+        for i in range(0, len(shortest_path) - 1):
             cur_node = shortest_path[i]
             next_node = shortest_path[i + 1]
             min_distance = graph[cur_node][next_node][0]['length']
             allowance = length_allowance * (min_distance / shortest_path_length)
-
             highest_elevation = -1
             best_path = []
-            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
 
+            # find all paths from cur_node to next_node and get the path length and elevation, add to original path
+            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
                 path_elevation = graph_utils.get_path_elevation(graph, path)
                 path_length = graph_utils.get_path_length(graph, path)
 
@@ -331,15 +562,33 @@ class StrategyAStar(RoutingStrategy):
         return max_path
 
     def minimum_elevation(self, source, goal, weight):
+        """Gets the shortest path within a path length limit, optimizing for minimum elevation.
+
+        Parameters
+        ----------
+        source : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+        weight : string
+            type of weight to use
+        Returns
+        ------
+        list of nodes that form the discovered path
+        """
+
         # print("calling minimum elevation")
         graph = self.graph
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
+        # Find the least elevation path using A* and elevation/grade as the edge weight
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
 
+        # if the path with smallest elevation is longer than the maximum allowed path, go through each node
+        # and find the shortest path from the end to the beginning, thereby optimizing for elevation and path length
         if least_elevation_length > max_path_length:
             length = len(least_elevation)
             for i in range(2, length+1):
@@ -353,30 +602,22 @@ class StrategyAStar(RoutingStrategy):
             return least_elevation
 
     def manhat(self, start, goal):
+        """Calculates the manhattan distance between two nodes.
+
+        Parameters
+        ----------
+        start : node
+            starting point node for the path
+        goal : node
+            destination node for the path
+
+        Returns
+        ------
+        manhattan distance, int
+        """
+
         amherst_graph = self.graph
         start_x, start_y = amherst_graph.nodes[start]['x'], amherst_graph.nodes[start]['y']
         end_x, end_y = amherst_graph.nodes[goal]['x'], amherst_graph.nodes[goal]['y']
         # return 0 # Dijkstra, essentially
         return ((end_x - start_x) ** 2 + (end_y - start_y) ** 2)**0.5
-
-
-def weight_function(graph, weight='length'):
-
-    if weight == 'length':
-        def weight_(source, dest, edge_data):
-            return min(attr.get(weight, 1) for attr in edge_data.values())
-    elif weight == 'grade':
-        def weight_(source, dest, edge_data):
-            try:
-                return max(0, edge_data['grade'])
-            except:
-                return 0
-    elif weight == 'elevation_change':
-        def weight_(source, dest, edge_data):
-            try:
-                elevation_diff = graph.nodes[dest]['elevation'] - graph.nodes[source]['elevation']
-                return max(elevation_diff, 0)
-            except:
-                print("elevation not found: ", source, dest)
-                return 0
-    return weight_
