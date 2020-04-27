@@ -1,11 +1,14 @@
 import pickle as pkl
 import networkx as nx
+import osmnx as ox
+from time import time
 from backend.src.context import Context
 from backend.src import strategies
 from backend.src import graph_utils
 
+
 graph = None
-limit = 50
+limit = 5
 
 
 def load_graph():
@@ -13,6 +16,13 @@ def load_graph():
     with open("test_graph.pkl", 'rb') as infile:
         graph = pkl.load(infile)
         print('Loaded test graph')
+
+
+def load_mass_graph():
+    global graph
+    with open("../src/data/massachusetts_bike.pkl", 'rb') as infile:
+        graph = pkl.load(infile)
+        print('Loaded MASS graph')
 
 
 # Test dijkstra's shortest path and compare to networkx shortest_path
@@ -176,6 +186,133 @@ def shortest_path(start_node, dest_node):
     return route
 
 
+def all_shortest_path(start, dest):
+    try:
+        start_node = get_node_from_address(graph, start)
+        dest_node = get_node_from_address(graph, dest)
+    except Exception as e:
+        print(e)
+        print("Could not map address to node")
+    times = []
+    print("Running Dijkstra")
+    context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    # print("Running BFS")
+    # context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
+    # start_time = time()
+    # path = context.run_strategy_route(start_node, dest_node)
+    # end_time = time()
+    # times.append(end_time - start_time)
+    print("Running A*")
+    context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    return times
+
+
+def min_elevation_path_performance(start, dest, method):
+    try:
+        start_node = get_node_from_address(graph, start)
+        dest_node = get_node_from_address(graph, dest)
+    except Exception as e:
+        print(e)
+        print("Could not map address to node")
+    times = []
+    print("Running Dijkstra")
+    context = Context(strategies.StrategyDijkstra(graph, 0, method))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    print("Running A*")
+    context = Context(strategies.StrategyAStar(graph, 0, method))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    return times
+
+
+def max_elevation_path_performance(start, dest, method):
+    try:
+        start_node = get_node_from_address(graph, start)
+        dest_node = get_node_from_address(graph, dest)
+    except Exception as e:
+        print(e)
+        print("Could not map address to node")
+    times = []
+    print("Running Dijkstra")
+    context = Context(strategies.StrategyDijkstra(graph, 0, method))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    print("Running A*")
+    context = Context(strategies.StrategyAStar(graph, 0, method))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
+    return times
+
+
+def shortest_path_performance():
+    start_locations = ['Harvard University', 'University of Massachusetts Amherst',
+                       'Massachusetts Institute of Technology']
+    end_locations = ['TD Garden', 'Amherst College', 'Boston Public Market']
+    for i in range(3):
+        runtimes = all_shortest_path(start_locations[i], end_locations[i])
+        print(runtimes)
+
+
+def min_elevation_performance(method='min elevation_change'):
+    start_locations = ['Harvard University', 'University of Massachusetts Amherst',
+                       'Massachusetts Institute of Technology']
+    end_locations = ['TD Garden', 'Amherst College', 'Boston Public Market']
+    for i in range(3):
+        runtimes = min_elevation_path_performance(start_locations[i], end_locations[i], method)
+        print(runtimes)
+
+
+def max_elevation_performance(method='max elevation_change'):
+    start_locations = ['Harvard University', 'University of Massachusetts Amherst',
+                       'Massachusetts Institute of Technology']
+    end_locations = ['TD Garden', 'Amherst College', 'Boston Public Market']
+    for i in range(3):
+        runtimes = max_elevation_path_performance(start_locations[i], end_locations[i], method)
+        print(runtimes)
+
+
+def performance_metrics():
+    load_mass_graph()
+    # print("Shortest Path Times")
+    shortest_path_performance()
+    print("Minimum Elevation Times using Elevation Change")
+    min_elevation_performance('min elevation_change')
+    print("Maximum Elevation Times using Elevation Change")
+    max_elevation_performance('max elevation_change')
+    print("Minimum Elevation Times using Grade")
+    min_elevation_performance('min grade')
+    print("Maximum Elevation Times using Grade")
+    max_elevation_performance('max grade')
+
+
+def get_node_from_address(graph, address):
+    try:
+        latlng = ox.geocode(address)
+        node, dist = ox.get_nearest_node(graph, latlng, return_dist=True)
+        if dist > 10000:
+            raise Exception("{} is not currently included in Routing Capabilities".format(address))
+        return node
+    except:
+        raise Exception("Could not find location '{}'".format(address))
+
+
 if __name__ == "__main__":
     load_graph()
     dijkstra_shortest_path(0, 10)
@@ -185,3 +322,5 @@ if __name__ == "__main__":
     a_star_shortest_path(0, 10)
     a_star_min_elevation(0, 10)
     a_star_max_elevation(0, 10)
+    # performance_metrics()
+
