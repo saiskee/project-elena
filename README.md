@@ -54,6 +54,7 @@ Just input a start destination and end destination and generate your route with 
 To get rough performance measures, we measured the runtime in seconds for 3 pairs of locations in the Boston Area. 
 The values were averaged over 5 trials.
 
+****Shortest Path Runtime Comparison****
 
 | Algorithm     | Dijkstra's    | A*    |     BFS       |
 | ------------- | ------------- | ------------- | ------------- |
@@ -65,7 +66,7 @@ the start end the end point are large. Since Dijkstra's is using a priority queu
 the shortest paths. A* ran very similar to Dijkstra's. It's possible that there is a more optimal heuristic that would
 bring the runtime down.
 
-Elevation Algorithm Runtime Compared to Shortest Path Runtime
+****Elevation Algorithm Runtime Compared to Shortest Path Runtime****
 
 | Algorithm     | Dijkstra's    | A*    |
 | ------------- | ------------- | ------------- |
@@ -77,7 +78,7 @@ for Dijkstra, adn 20 times slower for A*. The maximum elevation time algorithm r
 elevation algorithm. 
 
 
-Algorithm Runtime of A* compared to Dijkstra's
+****Algorithm Runtime of A* compared to Dijkstra's****
 
 | Algorithm     | Dijkstra's    | A*    |
 | ------------- | ------------- | ------------- |
