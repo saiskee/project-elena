@@ -49,7 +49,7 @@ Elena includes a host of features that allow for maximum end user control. These
 Just input a start destination and end destination and generate your route with <b>your</b> preferences
 
 
-****Performance Measures****:
+## Performance Measures:
 
 To get rough performance measures, we measured the runtime in seconds for 3 pairs of locations in the Boston Area. 
 The values were averaged over 5 trials.
