@@ -273,27 +273,22 @@ class StrategyDijkstra(RoutingStrategy):
 
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        shortest_path_elevation = graph_utils.get_path_elevation(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
         # calculate the smallest elevation path using elevation/grade
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
-        least_elevation_change = graph_utils.get_path_elevation(graph, least_elevation)
 
         # if the path with smallest elevation is longer than the maximum allowed path, go through each node
         # and find the shortest path from the end to the beginning, thereby optimizing for elevation and path length
-        if least_elevation_length > max_path_length or least_elevation_change > shortest_path_elevation:
+        if least_elevation_length > max_path_length:
             length = len(least_elevation)
             for i in range(2, length+1):
                 node = least_elevation[-i]
                 path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
                 node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
                 new_path_length = graph_utils.get_path_length(graph, node_to_goal_shortest)
-                path_elevation_to_node = graph_utils.get_path_elevation(graph, least_elevation[:-i + 1])
-                new_elevation = graph_utils.get_path_elevation(graph, node_to_goal_shortest)
-                if path_length_to_node + new_path_length <= max_path_length and \
-                        path_elevation_to_node + new_elevation <= shortest_path_elevation:
+                if path_length_to_node + new_path_length <= max_path_length:
                     return least_elevation[:-i] + node_to_goal_shortest
         else:
             return least_elevation
@@ -485,27 +480,22 @@ class StrategyAStar(RoutingStrategy):
         graph = self.graph
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        shortest_path_elevation = graph_utils.get_path_elevation(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
 
         # Find the least elevation path using A* and elevation/grade as the edge weight
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
-        least_elevation_change = graph_utils.get_path_elevation(graph, least_elevation)
 
         # if the path with smallest elevation is longer than the maximum allowed path, go through each node
         # and find the shortest path from the end to the beginning, thereby optimizing for elevation and path length
-        if least_elevation_length > max_path_length or least_elevation_change > shortest_path_elevation:
+        if least_elevation_length > max_path_length:
             length = len(least_elevation)
             for i in range(2, length+1):
                 node = least_elevation[-i]
                 path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
                 node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
                 new_path_length = graph_utils.get_path_length(graph, node_to_goal_shortest)
-                path_elevation_to_node = graph_utils.get_path_elevation(graph, least_elevation[:-i + 1])
-                new_elevation = graph_utils.get_path_elevation(graph, node_to_goal_shortest)
-                if path_length_to_node + new_path_length <= max_path_length and \
-                        path_elevation_to_node + new_elevation <= shortest_path_elevation:
+                if path_length_to_node + new_path_length <= max_path_length:
                     return least_elevation[:-i] + node_to_goal_shortest
         else:
             return least_elevation

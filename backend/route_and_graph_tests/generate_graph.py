@@ -36,7 +36,9 @@ def create_graph():
 
     for edge in G.edges:
         G.edges[edge[0], edge[1], 0]['length'] = int(distance(G.nodes[edge[0]], G.nodes[edge[1]]))
-        print(G.edges[edge[0], edge[1], 0]['length'])
+        # print(G.edges[edge[0], edge[1], 0]['length'])
+        G.edges[edge[0], edge[1], 0]['grade'] = grade(G.nodes[edge[0]], G.nodes[edge[1]], G.edges[edge[0], edge[1], 0]['length'])
+        # print(G.edges[edge[0], edge[1], 0]['grade'])
 
     pkl.dump(G, open("test_graph.pkl", "wb"))
 
@@ -50,6 +52,10 @@ def distance(node1, node2):
     dx = node1['x'] - node2['x']
     dy = node1['y'] - node2['y']
     return math.sqrt(dx * dx + dy * dy)
+
+
+def grade(node1, node2, length):
+    return (node2['elevation'] - node1['elevation']) / length
 
 
 if __name__ == "__main__":

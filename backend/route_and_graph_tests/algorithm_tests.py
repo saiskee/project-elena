@@ -99,26 +99,29 @@ def dijkstra_max_elevation(start_node, dest_node):
 
 # Test dijkstra's min elevation path using grade as the weight
 # Passes if the min_elevation path has a smaller path length than the limit and
-# if the min_elevation is less than the regular elevation
+# if the grade is less than the regular grade
 def dijkstra_min_elevation_grade(start_node, dest_node):
     print("Dijkstra min elevation using grade as weight")
     context = Context(strategies.StrategyDijkstra(graph, limit, 'min grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
-    elevation = graph_utils.get_path_elevation(graph, path)
+    grade = graph_utils.get_average_grade(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
 
     context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Vanilla path", path)
-    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_grade = graph_utils.get_average_grade(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
     print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
           max_length, "\nLength of elevation path:", max_path_length)
-    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
-    if max_path_length <= max_length and elevation <= regular_elevation:
-        print("Test Passed")
+    print("Vanilla path Grade:", regular_grade, "\nNew Grade:", grade)
+    if max_path_length <= max_length:
+        if grade <= regular_grade:
+            print("Test Passed")
+        else:
+            print("Test Passed: Path length. Dijkstra's wasn't able to minimize grade")
     else:
         print("Test Failed")
     print("\n")
@@ -126,26 +129,29 @@ def dijkstra_min_elevation_grade(start_node, dest_node):
 
 # Test dijkstra's max elevation path using grade as the weight
 # Passes if the max_elevation path has a smaller path length than the limit and
-# if the max_elevation is greater than the regular elevation
+# if the grade is greater than the regular grade
 def dijkstra_max_elevation_grade(start_node, dest_node):
     print("Dijkstra max elevation using grade as weight")
     context = Context(strategies.StrategyDijkstra(graph, limit, 'max grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
-    elevation = graph_utils.get_path_elevation(graph, path)
+    grade = graph_utils.get_average_grade(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
 
     context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Vanilla path", path)
-    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_grade = graph_utils.get_average_grade(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
     print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
           max_length, "\nLength of elevation path:", max_path_length)
-    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
-    if max_path_length <= max_length and elevation >= regular_elevation:
-        print("Test Passed")
+    print("Vanilla path Grade:", round(regular_grade, 2), "\nNew Grade:", round(grade, 2))
+    if max_path_length <= max_length:
+        if grade >= regular_grade:
+            print("Test Passed")
+        else:
+            print("Test Passed: Path length. Dijkstra's wasn't able to maximize grade")
     else:
         print("Test Failed")
     print("\n")
@@ -237,25 +243,28 @@ def a_star_max_elevation(start_node, dest_node):
 
 # Test A* min elevation path using grade as the weight
 # Passes if the min_elevation path has a smaller path length than the limit and
-# if the min_elevation is less than the regular elevation
+# if the grade is less than the regular grade
 def a_star_min_elevation_grade(start_node, dest_node):
     print("A star min elevation using grade as weight")
     context = Context(strategies.StrategyAStar(graph, limit, 'min grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("min path", path)
-    elevation = graph_utils.get_path_elevation(graph, path)
+    grade = graph_utils.get_average_grade(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
     print("vanilla path", path)
-    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_grade = graph_utils.get_average_grade(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
     print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
           max_length, "\nLength of elevation path:", max_path_length)
-    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
-    if max_path_length <= max_length and elevation <= regular_elevation:
-        print("Test Passed")
+    print("Vanilla path Grade:", round(regular_grade, 2), "\nNew Grade:", round(grade, 2))
+    if max_path_length <= max_length:
+        if grade <= regular_grade:
+            print("Test Passed")
+        else:
+            print("Test Passed: Path length. A* wasn't able to minimize grade")
     else:
         print("Test Failed")
     print("\n")
@@ -263,26 +272,29 @@ def a_star_min_elevation_grade(start_node, dest_node):
 
 # Test A* max elevation path
 # Passes if the max_elevation path has a smaller path length than the limit and
-# if the max_elevation is greater than the regular elevation
+# if the grade is greater than the regular grade
 def a_star_max_elevation_grade(start_node, dest_node):
     print("A star max elevation using grade as weight")
     context = Context(strategies.StrategyAStar(graph, limit, 'max grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
-    elevation = graph_utils.get_path_elevation(graph, path)
+    grade = graph_utils.get_average_grade(graph, path)
     max_path_length = graph_utils.get_path_length(graph, path)
 
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Vanilla path", path)
-    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_grade = graph_utils.get_average_grade(graph, path)
     regular_path_length = graph_utils.get_path_length(graph, path)
     max_length = regular_path_length * (1 + limit)
     print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
           max_length, "\nLength of elevation path:", max_path_length)
-    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
-    if max_path_length <= max_length and elevation >= regular_elevation:
-        print("Test Passed")
+    print("Vanilla path Grade:", round(regular_grade, 2), "\nNew Grade:", round(grade, 2))
+    if max_path_length <= max_length:
+        if grade >= regular_grade:
+            print("Test Passed")
+        else:
+            print("Test Passed: Path length. A* wasn't able to maximize grade")
     else:
         print("Test Failed")
     print("\n")

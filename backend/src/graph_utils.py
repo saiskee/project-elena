@@ -34,3 +34,10 @@ def weight_function(graph, weight='length'):
                 print("elevation not found: ", source, dest)
                 return 0
     return weight_
+
+
+def get_average_grade(graph, path):
+    avg_grade = 0
+    for i in range(len(path) - 1):
+        avg_grade += max(0, graph[path[i]][path[i+1]][0]['grade'])
+    return avg_grade
