@@ -19,6 +19,7 @@ The frontend for EleNa is a React app. If wish to run the frontend individually 
 yarn install
 yarn start
 ```
+Once the development server has started, the webapp development version will open in your default browser.
 
 **Note:** If you wish to build the latest version of the frontend and run it with the Flask app, simply run the `build-frontend.sh` script from the root of the directory.
 
@@ -27,3 +28,18 @@ yarn start
 ## How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
+<center> _Figure 1. The Elena Webapp Graphical User Interface_ </center>
+
+Elena includes a host of features that allow for maximum end user control. These include:
+- Algorithm choice: Choose between A Star, Breadth First Search, or Dijkstra Search for your routing algorithm
+	- _Note: Breadth First Search does not allow for elevation preferences, as it will simply find a short path to your destination_
+- Control over the route through 4 preferences:
+	- Maximum/Minimum Steepness: Finds a route with the highest/lowest average grade (steepness) along your path
+	- Maximum/Minimum Elevation: Finds a route with the highest/lowest elevation changes in between nodes
+- Deviation Limit: Choose how much you would like to deviate from the shortest path to match your route preference
+	- A deviation limit of < 5% will just give you the shortest path!
+- 3 Choices for Transportation Method:
+	- Drive
+	- Bike
+	- Walk
+- A colored route that shows you the parts of the route with steepest ascent _(colored in red)_
