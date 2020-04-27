@@ -24,6 +24,6 @@ yarn start
 
 
 
-### How to use EleNa
+## How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
