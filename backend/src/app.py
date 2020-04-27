@@ -101,6 +101,7 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Mi
     return {'path': path, 'path_data': path_data}
 
 
+# Convert an address to a node
 def get_node_from_address(graph, address):
     try:
         latlng = ox.geocode(address)
@@ -136,6 +137,8 @@ def prep_path(graph, path):
     lengths_and_elevations.append({'length': 0, 'elevation': lastNode['elevation']})
     return final_path, lengths_and_elevations
 
+
+# Code to run backend on its own
 # if __name__ == "__main__":
 #     # amherst books
 #     start_lat = 42.375801
@@ -149,6 +152,3 @@ def prep_path(graph, path):
 #     print("Calling get_route from {} to {}".format(start_node, end_node))
 #     get_route(graphs['drive'], start_node, end_node, algorithm='Dijkstra', name='Route', color=(255, 0, 0), limit=0,
 #               goal='Min')
-
-# harvard to TD garden
-

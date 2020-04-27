@@ -11,6 +11,7 @@ graph = None
 limit = 5
 
 
+# Load in the test graph
 def load_graph():
     global graph
     with open("test_graph.pkl", 'rb') as infile:
@@ -18,6 +19,7 @@ def load_graph():
         print('Loaded test graph')
 
 
+# Load in the Massachusetts graph
 def load_mass_graph():
     global graph
     with open("../src/data/massachusetts_bike.pkl", 'rb') as infile:
@@ -41,11 +43,11 @@ def dijkstra_shortest_path(start_node, dest_node):
     print("\n")
 
 
-# Test dijkstra's min elevation path
+# Test dijkstra's min elevation path using elevation as the weight
 # Passes if the min_elevation path has a smaller path length than the limit and
 # if the min_elevation is less than the regular elevation
 def dijkstra_min_elevation(start_node, dest_node):
-    print("Dijkstra min elevation")
+    print("Dijkstra min elevation using elevation change as weight")
     context = Context(strategies.StrategyDijkstra(graph, limit, 'min elevation_change'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
@@ -68,12 +70,66 @@ def dijkstra_min_elevation(start_node, dest_node):
     print("\n")
 
 
-# Test dijkstra's max elevation path
+# Test dijkstra's max elevation path using elevation as the weight
 # Passes if the max_elevation path has a smaller path length than the limit and
 # if the max_elevation is greater than the regular elevation
 def dijkstra_max_elevation(start_node, dest_node):
-    print("Dijkstra max elevation")
+    print("Dijkstra max elevation using elevation change as weight")
     context = Context(strategies.StrategyDijkstra(graph, limit, 'max elevation_change'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Elevation path", path)
+    elevation = graph_utils.get_path_elevation(graph, path)
+    max_path_length = graph_utils.get_path_length(graph, path)
+
+    context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
+    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_path_length = graph_utils.get_path_length(graph, path)
+    max_length = regular_path_length * (1 + limit)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    if max_path_length <= max_length and elevation >= regular_elevation:
+        print("Test Passed")
+    else:
+        print("Test Failed")
+    print("\n")
+
+
+# Test dijkstra's min elevation path using grade as the weight
+# Passes if the min_elevation path has a smaller path length than the limit and
+# if the min_elevation is less than the regular elevation
+def dijkstra_min_elevation_grade(start_node, dest_node):
+    print("Dijkstra min elevation using grade as weight")
+    context = Context(strategies.StrategyDijkstra(graph, limit, 'min grade'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Elevation path", path)
+    elevation = graph_utils.get_path_elevation(graph, path)
+    max_path_length = graph_utils.get_path_length(graph, path)
+
+    context = Context(strategies.StrategyDijkstra(graph, 0, 'vanilla'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
+    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_path_length = graph_utils.get_path_length(graph, path)
+    max_length = regular_path_length * (1 + limit)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    if max_path_length <= max_length and elevation <= regular_elevation:
+        print("Test Passed")
+    else:
+        print("Test Failed")
+    print("\n")
+
+
+# Test dijkstra's max elevation path using grade as the weight
+# Passes if the max_elevation path has a smaller path length than the limit and
+# if the max_elevation is greater than the regular elevation
+def dijkstra_max_elevation_grade(start_node, dest_node):
+    print("Dijkstra max elevation using grade as weight")
+    context = Context(strategies.StrategyDijkstra(graph, limit, 'max grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
@@ -126,12 +182,65 @@ def a_star_shortest_path(start_node, dest_node):
     print("\n")
 
 
-# Test A* min elevation path
+# Test A* min elevation path using elevation as the weight
 # Passes if the min_elevation path has a smaller path length than the limit and
 # if the min_elevation is less than the regular elevation
 def a_star_min_elevation(start_node, dest_node):
-    print("A star min elevation")
+    print("A star min elevation using elevation change as weight")
     context = Context(strategies.StrategyAStar(graph, limit, 'min elevation_change'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("min path", path)
+    elevation = graph_utils.get_path_elevation(graph, path)
+    max_path_length = graph_utils.get_path_length(graph, path)
+    context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("vanilla path", path)
+    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_path_length = graph_utils.get_path_length(graph, path)
+    max_length = regular_path_length * (1 + limit)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    if max_path_length <= max_length and elevation <= regular_elevation:
+        print("Test Passed")
+    else:
+        print("Test Failed")
+    print("\n")
+
+
+# Test A* max elevation path using grade as the weight
+# Passes if the max_elevation path has a smaller path length than the limit and
+# if the max_elevation is greater than the regular elevation
+def a_star_max_elevation(start_node, dest_node):
+    print("A star max elevation using elevation change as weight")
+    context = Context(strategies.StrategyAStar(graph, limit, 'max elevation_change'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Elevation path", path)
+    elevation = graph_utils.get_path_elevation(graph, path)
+    max_path_length = graph_utils.get_path_length(graph, path)
+
+    context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
+    path = context.run_strategy_route(start_node, dest_node)
+    print("Vanilla path", path)
+    regular_elevation = graph_utils.get_path_elevation(graph, path)
+    regular_path_length = graph_utils.get_path_length(graph, path)
+    max_length = regular_path_length * (1 + limit)
+    print("Vanilla path length:", regular_path_length, "\nMax Possible Path length:",
+          max_length, "\nLength of elevation path:", max_path_length)
+    print("Vanilla path Elevation:", regular_elevation, "\nNew Elevation:", elevation)
+    if max_path_length <= max_length and elevation >= regular_elevation:
+        print("Test Passed")
+    else:
+        print("Test Failed")
+    print("\n")
+
+
+# Test A* min elevation path using grade as the weight
+# Passes if the min_elevation path has a smaller path length than the limit and
+# if the min_elevation is less than the regular elevation
+def a_star_min_elevation_grade(start_node, dest_node):
+    print("A star min elevation using grade as weight")
+    context = Context(strategies.StrategyAStar(graph, limit, 'min grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("min path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
@@ -155,9 +264,9 @@ def a_star_min_elevation(start_node, dest_node):
 # Test A* max elevation path
 # Passes if the max_elevation path has a smaller path length than the limit and
 # if the max_elevation is greater than the regular elevation
-def a_star_max_elevation(start_node, dest_node):
-    print("A star max elevation")
-    context = Context(strategies.StrategyAStar(graph, limit, 'max elevation_change'))
+def a_star_max_elevation_grade(start_node, dest_node):
+    print("A star max elevation using grade as weight")
+    context = Context(strategies.StrategyAStar(graph, limit, 'max grade'))
     path = context.run_strategy_route(start_node, dest_node)
     print("Elevation path", path)
     elevation = graph_utils.get_path_elevation(graph, path)
@@ -186,6 +295,7 @@ def shortest_path(start_node, dest_node):
     return route
 
 
+# Run all shortest path functions: BFS, Dijkstra's, A*
 def all_shortest_path(start, dest):
     try:
         start_node = get_node_from_address(graph, start)
@@ -200,12 +310,12 @@ def all_shortest_path(start, dest):
     path = context.run_strategy_route(start_node, dest_node)
     end_time = time()
     times.append(end_time - start_time)
-    # print("Running BFS")
-    # context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
-    # start_time = time()
-    # path = context.run_strategy_route(start_node, dest_node)
-    # end_time = time()
-    # times.append(end_time - start_time)
+    print("Running BFS")
+    context = Context(strategies.StrategyBFS(graph, 0, 'vanilla'))
+    start_time = time()
+    path = context.run_strategy_route(start_node, dest_node)
+    end_time = time()
+    times.append(end_time - start_time)
     print("Running A*")
     context = Context(strategies.StrategyAStar(graph, 0, 'vanilla'))
     start_time = time()
@@ -215,6 +325,7 @@ def all_shortest_path(start, dest):
     return times
 
 
+# Return the time of Dijkstra and A* minimum elevation
 def min_elevation_path_performance(start, dest, method):
     try:
         start_node = get_node_from_address(graph, start)
@@ -238,6 +349,7 @@ def min_elevation_path_performance(start, dest, method):
     return times
 
 
+# Return the time of Dijkstra and A* maximum elevation
 def max_elevation_path_performance(start, dest, method):
     try:
         start_node = get_node_from_address(graph, start)
@@ -261,6 +373,7 @@ def max_elevation_path_performance(start, dest, method):
     return times
 
 
+# Run shortest paths for a given set of locations
 def shortest_path_performance():
     start_locations = ['Harvard University', 'University of Massachusetts Amherst',
                        'Massachusetts Institute of Technology']
@@ -270,6 +383,7 @@ def shortest_path_performance():
         print(runtimes)
 
 
+# Run minimum elevation for a given set of locations
 def min_elevation_performance(method='min elevation_change'):
     start_locations = ['Harvard University', 'University of Massachusetts Amherst',
                        'Massachusetts Institute of Technology']
@@ -279,6 +393,7 @@ def min_elevation_performance(method='min elevation_change'):
         print(runtimes)
 
 
+# Run maximum elevation for a given set of locations
 def max_elevation_performance(method='max elevation_change'):
     start_locations = ['Harvard University', 'University of Massachusetts Amherst',
                        'Massachusetts Institute of Technology']
@@ -288,6 +403,7 @@ def max_elevation_performance(method='max elevation_change'):
         print(runtimes)
 
 
+# Run performance experiments on all algorithms and combinations
 def performance_metrics():
     load_mass_graph()
     # print("Shortest Path Times")
@@ -302,6 +418,7 @@ def performance_metrics():
     max_elevation_performance('max grade')
 
 
+# Convert an address to a node
 def get_node_from_address(graph, address):
     try:
         latlng = ox.geocode(address)
@@ -315,12 +432,18 @@ def get_node_from_address(graph, address):
 
 if __name__ == "__main__":
     load_graph()
+    # Run the tests
+    bfs_shortest_path(0, 10)
     dijkstra_shortest_path(0, 10)
     dijkstra_min_elevation(0, 10)
     dijkstra_max_elevation(0, 10)
-    bfs_shortest_path(0, 10)
+    dijkstra_min_elevation_grade(0, 10)
+    dijkstra_max_elevation_grade(0, 10)
     a_star_shortest_path(0, 10)
     a_star_min_elevation(0, 10)
     a_star_max_elevation(0, 10)
+    a_star_min_elevation_grade(0, 10)
+    a_star_max_elevation_grade(0, 10)
+    # Run the performance metrics
     # performance_metrics()
 
