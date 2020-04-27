@@ -28,7 +28,7 @@ Once the development server has started, the webapp development version will ope
 ## How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
-<p align="center"> _Figure 1. The Elena Webapp Graphical User Interface_ </p>
+<p align="center"> <i>Figure 1. The Elena Webapp Graphical User Interface</i></p>
 
 Elena includes a host of features that allow for maximum end user control. These include:
 - Algorithm choice: Choose between A Star, Breadth First Search, or Dijkstra Search for your routing algorithm
@@ -43,3 +43,5 @@ Elena includes a host of features that allow for maximum end user control. These
 	- Bike
 	- Walk
 - A colored route that shows you the parts of the route with steepest ascent _(colored in red)_
+
+Just input a start destination and end destination and generate your route with <b>your</b> preferences
