@@ -11,6 +11,8 @@ You must also download the following [cached-graphs.zip](https://www.dropbox.com
 
 Once dependencies have finished installing and you download the cached graphs, navigate to the `backend/src` directory and run `flask run` to start the backend server. The backend server serves both the api for EleNa's processing and pages for the WebApp.
 
+
+
 ### How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
