@@ -51,10 +51,6 @@ class StrategyBFS(RoutingStrategy):
 
         if self.method.startswith('vanilla'):
             return self.vanilla_shortest_path(source, goal)
-        elif self.method.startswith('min'):
-            return self.minimum_elevation(source, goal)
-        elif self.method.startswith('max'):
-            return self.maximum_elevation(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
         """Gets the shortest path given by BFS algorithm.
@@ -98,99 +94,6 @@ class StrategyBFS(RoutingStrategy):
                 explored.append(node)
         # Return empty list if path doesn't exist
         return []
-
-    def maximum_elevation(self, source, goal):
-        """Gets the shortest path within a path length limit, optimizing for maximum elevation.
-
-        Parameters
-        ----------
-        source : node
-            starting point node for the path
-        goal : node
-            destination node for the path
-
-        Returns
-        ------
-        list of nodes that form the discovered path
-        """
-
-        # print("calling maximizing elevation")
-        graph = self.graph
-
-        shortest_path = self.vanilla_shortest_path(source, goal)
-        shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        max_path_length = shortest_path_length * (1 + self.limit)
-
-        max_path = []
-        length_allowance = max_path_length - shortest_path_length
-
-        # Iterate through each pair of nodes and find a subpath that can maximize elevation within a path
-        # length constraint
-        for i in range(0, len(shortest_path) - 1):
-            cur_node = shortest_path[i]
-            next_node = shortest_path[i + 1]
-            min_distance = graph[cur_node][next_node][0]['length']
-            allowance = length_allowance * (min_distance / shortest_path_length)
-            highest_elevation = -1
-            best_path = []
-
-            # find all paths from cur_node to next_node and get the path length and elevation, add to original path
-            for path in nx.all_simple_paths(graph, cur_node, next_node, cutoff=5):
-                path_elevation = graph_utils.get_path_elevation(graph, path)
-                path_length = graph_utils.get_path_length(graph, path)
-                if path_elevation > highest_elevation:
-                    if path_length <= allowance + min_distance:
-                        highest_elevation = path_elevation
-                        best_path = path
-
-            best_path_length = graph_utils.get_path_length(graph, best_path)
-            length_allowance -= (best_path_length - min_distance)
-
-            for j in best_path[:-1]:
-                max_path.append(j)
-
-        max_path.append(goal)
-        return max_path
-
-    def minimum_elevation(self, source, goal):
-        """Gets the shortest path within a path length limit, optimizing for minimum elevation.
-
-        Parameters
-        ----------
-        source : node
-            starting point node for the path
-        goal : node
-            destination node for the path
-        weight : string
-            type of weight to use
-        Returns
-        ------
-        list of nodes that form the discovered path
-        """
-
-        # print("calling minimum elevation")
-        graph = self.graph
-
-        shortest_path = self.vanilla_shortest_path(source, goal)
-        shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
-        max_path_length = shortest_path_length * (1 + self.limit)
-
-        # calculate the smallest elevation path using elevation/grade
-        # should be the same as regular BFS because BFS doesn't use edge weights
-        least_elevation = self.vanilla_shortest_path(source, goal, edge_weight='grade')
-        least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
-
-        if least_elevation_length > max_path_length:
-            length = len(least_elevation)
-            for i in range(2, length+1):
-                node = least_elevation[-i]
-                path_length_to_node = graph_utils.get_path_length(graph, least_elevation[:-i + 1])
-                node_to_goal_shortest = self.vanilla_shortest_path(node, goal)
-                new_path_length = graph_utils.get_path_length(graph, node_to_goal_shortest)
-                if path_length_to_node + new_path_length <= max_path_length:
-                    return least_elevation[:-i] + node_to_goal_shortest
-        else:
-            return least_elevation
 
 
 class StrategyDijkstra(RoutingStrategy):

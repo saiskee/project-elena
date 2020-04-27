@@ -28,6 +28,8 @@ Once the development server has started, the webapp development version will ope
 ## How to use EleNa
   
 ![Screenshot of Elena System](images/elena-screenshot.png)
+
+
 <p align="center"> <i>Figure 1. The Elena Webapp Graphical User Interface</i></p>
 
 Elena includes a host of features that allow for maximum end user control. These include:
@@ -44,10 +46,49 @@ Elena includes a host of features that allow for maximum end user control. These
 	- Walk
 - A colored route that shows you the parts of the route with steepest ascent _(colored in red)_
 
-Just input a start destination and end destination and get your route with <b>your</b> preferences!
-
-## Implementation / Design Choices
+Just input a start destination and end destination and generate your route with <b>your</b> preferences
 
 
+## Performance Measures:
+
+To get rough performance measures, we measured the runtime in seconds for 3 pairs of locations in the Boston Area. 
+The values were averaged over 5 trials.
+
+****Shortest Path Runtime Comparison****
+
+| Algorithm     | Dijkstra's    | A*    |     BFS       |
+| ------------- | ------------- | ------------- | ------------- |
+| Shortest Path  | 1.00  | 1.61  | 9.48  |
+
+The chart is normalized to the smallest runtime. The chart shows us how much slower A* and BFS run compared
+to Dijkstra's to get the shortest path. BFS can run slower than Dijkstra's if the number of nodes between
+the start end the end point are large. Since Dijkstra's is using a priority queue, it is better able to filter
+the shortest paths. A* ran very similar to Dijkstra's. It's possible that there is a more optimal heuristic that would
+bring the runtime down.
+
+****Elevation Algorithm Runtime Compared to Shortest Path Runtime****
+
+| Algorithm     | Dijkstra's    | A*    |
+| ------------- | ------------- | ------------- |
+| Minimum Elevation Change  | 15.19  | 20.31  |
+| Maximum Elevation Change  | 1.46  | 1.42  |
+
+Here we can see that the minimum elevation algorithm runs 15 time slower compared to the shortest path algorithm
+for Dijkstra, adn 20 times slower for A*. The maximum elevation time algorithm runs much faster than the minimum 
+elevation algorithm. 
 
 
+****Algorithm Runtime of A\* compared to Dijkstra's****
+
+| Algorithm     | Dijkstra's    | A*    |
+| ------------- | ------------- | ------------- |
+| Shortest Path  |  1.00 | 1.64  |
+| Minimize Elevation Change  | 1.00  | 2.11  |
+| Maximize Elevation Change  | 1.00  | 1.48  |
+| Minimize Grade  | 1.00  | 2.51  |
+| Maximize Grade  | 1.00  | 1.53  |
+
+This chart is normalized compared to Dijkstra's runtime.
+It shows us how much better Dijkstra's Algorithm performed better than the A* Algorithm in terms of runtime. 
+We can see that Dijkstra's had faster runtimes to minimize the elevation using elevation change and grade 
+compared to A*. Maximizing the elevation took slightly longer compared to minimizing. 
