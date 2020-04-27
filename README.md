@@ -44,4 +44,10 @@ Elena includes a host of features that allow for maximum end user control. These
 	- Walk
 - A colored route that shows you the parts of the route with steepest ascent _(colored in red)_
 
-Just input a start destination and end destination and generate your route with <b>your</b> preferences
+Just input a start destination and end destination and get your route with <b>your</b> preferences!
+
+## Implementation / Design Choices
+
+
+
+
