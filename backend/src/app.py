@@ -13,6 +13,20 @@ modes = [("drive", graphs), ("walk", graphs), ("bike", graphs)]
 
 
 def load_graph(method, graphs):
+    """
+    Loads MA graphs for specified method into memory.
+
+    Parameters:
+    -----------
+    method: string
+        The specific graph to load. ex: drive, bike, walk
+    graphs: {string:graph}
+        Map that stores the graphs with the method as the key.
+
+    Returns:
+    --------
+        Nothing
+    """
     with open("data/massachusetts_{}.pkl".format(method), 'rb') as infile:
         _graph = pkl.load(infile)
         graphs[method] = _graph
@@ -38,15 +52,23 @@ def index():
 @app.route('/route', methods=['POST'])
 def route():
     """
-    request.data: {
-        start: "Start Address Lane"
-        dest: "Dest"
-        goal: "Minimize Elevation Gain / Maximize Elevation Gain"
-        limit: "##"
-        algorithm: "ucs/astar/bfs/..."
-        method: "drive" / walk / bike
-    }
-    """
+        Receives requests from front end and extracts data to run the routing function.
+
+        Parameters:
+        -----------
+        request: Request
+            The HTTP Post request with data in the form:
+                start: "Start Address Lane"
+                dest: "Dest"
+                goal: "Minimize Elevation Gain / Maximize Elevation Gain"
+                limit: "##"
+                algorithm: "ucs/astar/bfs/..."
+                method: "drive" / walk / bike
+
+        Returns:
+        --------
+            Result of get_route function
+        """
 
     data = json.loads(request.data)
     print(data)
@@ -67,6 +89,28 @@ def route():
 
 
 def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Minimize Elevation Gain'):
+    """
+            Receives requests from front end and extracts data to run the routing function.
+
+            Parameters:
+            -----------
+            graph: networkx Graph
+                The graph to perform the routing algorithm on.
+            start_node: networkx Node
+                The starting node for the graph.
+            dest_node: networkx Node
+                The destination node for the graph.
+            algorithm: String
+                The algorithm to run. ex: AStar, Breadth First Search, Dijkstra
+            limit: Float
+                The percentage that the generated path can deviate from the shortest path.
+            goal: String
+                The objective of the route. ex: Minimize Elevation Gain, Maximize Elevation Gain
+
+            Returns:
+            --------
+                {'path': [[long, lat]], 'path_data': [{elevation, length, grade}]}
+    """
     print("Setting up right algorithm object")
     if len(goal.split()) > 1:
         weight = goal.split()[1]
@@ -103,6 +147,20 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Mi
 
 # Convert an address to a node
 def get_node_from_address(graph, address):
+    """
+                Converts a string address to the closest node on a graph.
+
+                Parameters:
+                -----------
+                graph: networkx Graph
+                    The graph to perform the look up.
+                address: String
+                    The address to convert to a node.
+
+                Returns:
+                --------
+                    node: The closest node to the address given.
+     """
     try:
         latlng = ox.geocode(address)
         node, dist = ox.get_nearest_node(graph, latlng, return_dist=True)
@@ -114,6 +172,21 @@ def get_node_from_address(graph, address):
 
 
 def prep_path(graph, path):
+    """
+                Converts the path of nodes to data that can be sent back to the front end.
+
+                Parameters:
+                -----------
+                graph: networkx Graph
+                    The graph to perform the routing algorithm on.
+                path: [networkx Node]
+                    The array of nodes produced by the routing function.
+
+                Returns:
+                --------
+                    final_path: [[long, lat]]
+                    lengths_and_elevations: [{elevation, length, grade}]}
+    """
     final_path = []
     lengths_and_elevations = []
     for i in range(len(path)-1):
