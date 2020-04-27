@@ -9,7 +9,7 @@ In order to run Project Elena, install the required python dependencies using `p
 	- osmnx
 	- networkx
 
-You must also run the `download-graphs.sh` script in the root of the project to download the required graph cache files. Alternatively, you can also download it here [cached-graphs.zip](https://www.dropbox.com/s/fgxt8y9eegkyqs7/cached_graphs.zip?dl=0), unzip the file, and place all 3 pickle files in the `backend/data` directory.
+You must also run the `download-graphs.sh` script in the root of the project to download the required graph cache files. Alternatively, you can also download it here- [cached-graphs.zip](https://www.dropbox.com/s/fgxt8y9eegkyqs7/cached_graphs.zip?dl=0), unzip the file, and place all 3 pickle files in the `backend/data` directory.
 
 Once dependencies have finished installing and you download the cached graphs, navigate to the `backend/src` directory and run `flask run` to start the backend server. The backend server serves both the api for EleNa's processing and the frontend of the webapp.
 
