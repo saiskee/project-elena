@@ -1,4 +1,3 @@
-  
 import React, { Component } from "react";
 
 import Form from "react-bootstrap/Form";
@@ -7,7 +6,6 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Spinner from "react-bootstrap/Spinner";
 
-
 export default class UserInput extends Component {
 	state = {
 		start: "",
@@ -15,8 +13,7 @@ export default class UserInput extends Component {
 		goal: "Minimize Elevation Gain",
 		limit: "0",
 		algorithm: "AStar",
-		loading: false,
-		method: "drive"
+		method: "drive",
 	};
 
 	handleChange = (e) => {
@@ -28,7 +25,10 @@ export default class UserInput extends Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		// console.log(this.state);
-		this.setState({ loading: true })
+		// this.setState({ loading: true });
+		this.updateLoading()
+
+		// eslint-disable-next-line
 		const resp = {
 			path: [
 				[-71.1188219, 42.373674],
@@ -83,22 +83,25 @@ export default class UserInput extends Component {
 			name: "Route 1",
 			color: [255, 255, 255],
 		};
-		
-		// this.props.updateData(resp); 
-		fetch('/route',{
-			method: 'POST',
-			body: JSON.stringify(this.state)
-		})
-		.then(async res => {
-			let data = await res.json();
-			// console.log(data);
-			this.props.updateData(data);
-			this.setState({ loading: false })
-		})
-		.catch(err => {
-			console.log(err);
-		})
+		// this.props.updateData(resp);
 
+		fetch("/route", {
+			method: "POST",
+			body: JSON.stringify(this.state),
+		})
+			.then(async (res) => {
+				let data = await res.json();
+				this.props.updateData(data);
+				this.setState({ loading: false });
+			})
+			.catch((err) => {
+				console.log(err);
+				this.props.updateErrorMsg(err.toString())
+			});
+	};
+
+	updateLoading = () => {
+		this.props.updateLoading()
 	}
 
 	render() {
@@ -109,8 +112,8 @@ export default class UserInput extends Component {
 					width: "400px",
 					background: "rgba(0, 0, 0, 0.5)",
 					color: "#ffffff",
-					marginTop: "5%",
-					marginLeft: "5%"
+					marginTop: "2.5%",
+					marginLeft: "5%",
 				}}
 			>
 				<Form
@@ -166,7 +169,7 @@ export default class UserInput extends Component {
 						</Form.Group>
 					</Form.Row>
 
-					<Form.Row hidden={this.state.algorithm == 'Breadth First Search'}>
+					<Form.Row hidden={this.state.algorithm === 'Breadth First Search'}>
 						<Form.Group as={Col} controlId="goal">
 							<Form.Label>Optimization</Form.Label>
 							<Form.Control
@@ -184,7 +187,7 @@ export default class UserInput extends Component {
 						</Form.Group>
 					</Form.Row>
 
-					<Form.Row hidden={this.state.algorithm == 'Breadth First Search'}>
+					<Form.Row hidden={this.state.algorithm === 'Breadth First Search'}>
 						<Form.Group as={Col} controlId="limit">
 							<Form.Label>Deviation Limit (x%)</Form.Label>
 							<Form.Control
@@ -215,12 +218,13 @@ export default class UserInput extends Component {
 							</Form.Control>
 						</Form.Group>
 					</Form.Row>
-
 					<Form.Row className="justify-content-md-center">
 						<Button variant="light" type="submit">
-							{this.state.loading ? <Spinner animation="border" /> : "Submit"}
-							{/* <Spinner animation="border" /> */}
-							
+							{this.props.loading ? (
+								<Spinner animation="border" />
+							) : (
+								"Submit"
+							)}
 						</Button>
 					</Form.Row>
 				</Form>

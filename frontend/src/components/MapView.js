@@ -7,25 +7,19 @@ import { StaticMap } from "react-map-gl";
 const MAPBOX_TOKEN =
 	"pk.eyJ1IjoibmlsYXkxODA4IiwiYSI6ImNrOG1iaXp0cjBkeTEzZm12N3l3ODJweWEifQ.TDhSzGcCsjt5CsVRljpcrw";
 
-// Data to be used by the LineLayer
-// const data =
-
 export default class MapView extends React.Component {
 	render() {
 		const data = this.props.data;
-		
 
 		function perc2color(perc) {
-			var r, g, b = 0;
-			if(perc < 50) {
+			let r, g, b = 0;
+			if (perc < 50) {
 				g = 255;
 				r = Math.round(5.1 * perc);
-			}
-			else {
+			} else {
 				r = 255;
-				g = Math.round(510 - 5.10 * perc);
+				g = Math.round(510 - 5.1 * perc);
 			}
-			
 			return [r, g, b];
 		}
 
@@ -51,14 +45,14 @@ export default class MapView extends React.Component {
 				}
 			}
 			for (let i = 0; i < d.path.length; i++){
-				if (i == 0){
+				if (i === 0){
 					const pinData = {
 						name: "Start",
 						coordinates: d.path[i]
 					}
 					pinLayers.push(pinData)
 				}
-				else if (i == d.path.length - 1){
+				else if (i === d.path.length - 1){
 					const pinData = {
 						name: "Destination",
 						coordinates: d.path[i]
@@ -74,22 +68,14 @@ export default class MapView extends React.Component {
 					widthScale: 5,
 					widthMinPixels: 2,
 					getColor: (item) => renderColor(item, min_grade, max_grade),
-
-				})
-				pathLayers.push(newLayer)
+				});
+				pathLayers.push(newLayer);
 			}
 		}
-
-
-
-
-		const ICON_MAPPING = {
-			marker: {x: 0, y: 0, width: 32, height: 32, mask: true}
-		  };
 		
 		for (let i = 0; i < 2; i++){
 			pinLayers[i] = new IconLayer({
-				id: "icon-layer",
+				id: "pin-layer",
 				data:pinLayers[i],
 				pickable: true,
 				// iconAtlas and iconMapping are required

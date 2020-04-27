@@ -4,6 +4,7 @@ import "./styles/App.css";
 import UserInput from "./components/UserInput";
 import RouteData from "./components/RouteData";
 import MapView from "./components/MapView";
+import ErrorModal from "./components/ErrorModal";
 
 import { FlyToInterpolator } from "@deck.gl/core";
 
@@ -24,7 +25,10 @@ class App extends Component {
 			},
 			height: "99vh",
 			width: "100vw",
-			marginTop: "1vh"
+			marginTop: "1vh",
+			errorMsg: "No errors",
+			showError: false,
+			loading: false
 		};
 		this._onViewStateChange = this._onViewStateChange.bind(this);
 	}
@@ -50,6 +54,8 @@ class App extends Component {
 		this.setState({ viewport: viewport });
 		console.log(this.state);
 
+		this.updateLoading()
+
 		// Required to update viewport
 		this.updateHeight();
 	};
@@ -59,62 +65,84 @@ class App extends Component {
 	}
 
 	updateHeight = () => {
-		if(this.state.height === "100vh") {
+		if (this.state.height === "100vh") {
 			this.setState({ height: "99vh", marginTop: "1vh" });
-		}
-		else {
+		} else {
 			this.setState({ height: "100vh", marginTop: "0vh" });
 		}
 	};
 
+	updateErrorMsg = (msg) => {
+		this.setState({ errorMsg: msg, showError: true });
+		// this.updateLoading()
+		console.log("click");
+	};
+
+	updateLoading = () => {
+		console.log("updaing loading")
+		let bool = this.state.loading
+		this.setState({ loading: !bool });
+		console.log(this.state)
+	}
+
+	clearError = () => {
+		console.log("clear errors")
+		this.setState({ errorMsg: "No errors", showError: false });
+		this.updateLoading()
+	};
+
 	calculateZoom = (path) => {
-		let start = path[0]
-		let end = path[path.length - 1]
+		let start = path[0];
+		let end = path[path.length - 1];
 
 		let dist = this.haversine(start[1], start[0], end[1], end[0]);
 
-		console.log(dist);
+		console.log("dist: " + dist);
 
-		if(dist <= 1500) {
+		if (dist <= 1500) {
 			return 14.5;
 		}
-		if(dist <= 5000) {
+		if (dist <= 5000) {
 			return 13;
 		}
-		if(dist <= 15000) {
+		if (dist <= 15000) {
 			return 12;
 		}
-		
-		return 10;
-	}
-
-
+		if (dist <= 35000) {
+			return 11;
+		}
+		if (dist <= 65000) {
+			return 10;
+		}
+		return 8;
+	};
 
 	haversine = (lat1, lon1, lat2, lon2) => {
 		let R = 6371e3; // metres
-		let φ1 = lat1 * Math.PI / 180;
-		let φ2 = lat2 * Math.PI / 180;
-		let Δφ = (lat2-lat1) * Math.PI / 180;
-		let Δλ = (lon2-lon1) * Math.PI / 180;
+		let φ1 = (lat1 * Math.PI) / 180;
+		let φ2 = (lat2 * Math.PI) / 180;
+		let Δφ = ((lat2 - lat1) * Math.PI) / 180;
+		let Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-		let a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-				Math.cos(φ1) * Math.cos(φ2) *
-				Math.sin(Δλ/2) * Math.sin(Δλ/2);
-		let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		let a =
+			Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+			Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+		let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
 		let d = R * c;
 
-		return d
-	}
+		return d;
+	};
 
 	render() {
 		return (
 			<div
 				className="App"
-				style={
-					
-					{ background: "rgb(23, 24, 24)", position: "relative", alignItems: "bottom" }
-				}
+				style={{
+					background: "rgb(23, 24, 24)",
+					position: "relative",
+					alignItems: "bottom",
+				}}
 			>
 				<div style={{ zIndex: 0, position: "absolute" }}>
 					<MapView
@@ -129,7 +157,10 @@ class App extends Component {
 				<div style={{ zIndex: 9, height: "100vh" }}>
 					<Navbar
 						variant="dark"
-						style={{ height: "8vh", background: "rgba(0, 0, 0, 0.5)", }}
+						style={{
+							height: "8vh",
+							background: "rgba(0, 0, 0, 0.5)",
+						}}
 						className="ml-auto"
 					>
 						<Navbar.Brand style={{ marginLeft: "15px" }}>
@@ -144,30 +175,40 @@ class App extends Component {
 							</Nav.Link>
 						</Nav>
 					</Navbar>
+
+					<ErrorModal
+						showError={this.state.showError}
+						errorMsg={this.state.errorMsg}
+						clearError={this.clearError}
+					/>
+
 					<div>
 						<UserInput
 							className="userInput"
 							updateData={this.updateData}
 							payload={this.state}
+							updateErrorMsg={this.updateErrorMsg}
+							loading={this.state.loading}
+							updateLoading = {this.updateLoading}
 						/>
 					</div>
 
-					<div style={{position: "absolute", right: "5%", top: "15%"}}>
+					<div
+						style={{
+							position: "absolute",
+							right: "5%",
+							top: "12.5%",
+						}}
+					>
 						<RouteData
 							className="routeData"
 							data={this.state.data}
 						/>
 					</div>
-
 				</div>
-
-
 			</div>
 		);
 	}
 }
-
-
-
 
 export default App;
