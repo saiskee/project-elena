@@ -78,7 +78,7 @@ for Dijkstra, adn 20 times slower for A*. The maximum elevation time algorithm r
 elevation algorithm. 
 
 
-****Algorithm Runtime of A* compared to Dijkstra's****
+****Algorithm Runtime of A\* compared to Dijkstra's****
 
 | Algorithm     | Dijkstra's    | A*    |
 | ------------- | ------------- | ------------- |
