@@ -5,6 +5,9 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import { Line } from "react-chartjs-2";
 
+/*
+    Options and configurations for the Chart.js graph
+ */
 const options = {
 	scales: {
 		xAxes: [
@@ -55,6 +58,14 @@ let averageGrade = 0;
 let totalElevationGain = 0;
 export default class RouteData extends Component {
 
+    /**
+        Calculates statistics that will be displayed
+
+        Arguments
+        ----------
+        dataPoints: The json object that was passed to the frontend from the backend.
+
+     **/
     update = (dataPoints) => {
         
         finalDistance = 0;
@@ -64,6 +75,8 @@ export default class RouteData extends Component {
         if (dataPoints.length === 0) {
             return
         }
+        // data[0].path is [[long, lat]]
+        // data[0].path_data is [{elevation, length}]
         let path = dataPoints[0].path;
         let path_data = dataPoints[0].path_data;
 
@@ -86,7 +99,7 @@ export default class RouteData extends Component {
             }
 
             if (i !== path.length - 1) {
-                averageGrade += grade
+                averageGrade += grade;
                 if ((path_data[i+1].elevation - elev) > 0){
                     totalElevationGain += (path_data[i+1].elevation - elev);
                 }
@@ -101,15 +114,16 @@ export default class RouteData extends Component {
 
         testData.labels = label;
         testData.datasets[0].data = elevData;
-        averageGrade /= path.length
+        averageGrade /= path.length;
         finalDistance = total_Dist;
     };
 
     render() {
 
-        // data[0].path is {long, lat, dist, elevation}
+
         let dataPoints = this.props.data;
 
+        // Only update data if it is new
         if (dataPoints !== datas) {
             this.update(dataPoints);
             datas = dataPoints;

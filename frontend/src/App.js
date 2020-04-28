@@ -33,6 +33,14 @@ class App extends Component {
 		this._onViewStateChange = this._onViewStateChange.bind(this);
 	}
 
+	/**
+        Updates the viewport, loading screen, and the height of the map
+
+        Arguments
+        ----------
+        d: The HTTP Response from the backend
+
+     **/
 	updateData = (d) => {
 		console.log("update");
 		const resp = [];
@@ -54,16 +62,27 @@ class App extends Component {
 		this.setState({ viewport: viewport });
 		console.log(this.state);
 
-		this.updateLoading()
+		this.updateLoading();
 
 		// Required to update viewport
 		this.updateHeight();
 	};
 
+	/**
+        Listens for a state change from the viewport and sets it's state
+
+        Arguments
+        ----------
+        viewState: The updated viewport
+
+     **/
 	_onViewStateChange({ viewState }) {
 		this.setState({ viewport: viewState });
 	}
 
+	/**
+        Updates the height. This is required to update the viewport correctly.
+     **/
 	updateHeight = () => {
 		if (this.state.height === "100vh") {
 			this.setState({ height: "99vh", marginTop: "1vh" });
@@ -72,25 +91,48 @@ class App extends Component {
 		}
 	};
 
+	/**
+        Update the error message and shows the error dialog.
+
+        Arguments
+        ----------
+        msg: String
+	 		The error message.
+
+     **/
 	updateErrorMsg = (msg) => {
 		this.setState({ errorMsg: msg, showError: true });
 		// this.updateLoading()
 		console.log("click");
 	};
 
+	/**
+        Toggles the loading screen.
+     **/
 	updateLoading = () => {
-		console.log("updaing loading")
-		let bool = this.state.loading
+		console.log("updaing loading");
+		let bool = this.state.loading;
 		this.setState({ loading: !bool });
 		console.log(this.state)
-	}
+	};
 
+	/**
+        Removes the error and hides the error dialog.
+     **/
 	clearError = () => {
-		console.log("clear errors")
+		console.log("clear errors");
 		this.setState({ errorMsg: "No errors", showError: false });
 		this.updateLoading()
 	};
 
+	/**
+        Calculates the proper map zoom level based on the length of the path
+
+        Arguments
+        ----------
+        path: The path to be displayed
+
+     **/
 	calculateZoom = (path) => {
 		let start = path[0];
 		let end = path[path.length - 1];
