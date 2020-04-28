@@ -6,6 +6,9 @@ import math
 
 
 def create_graph():
+    """
+            Generates and shows a graph used for testing.
+    """
     G = nx.generators.directed.random_uniform_k_out_graph(20, 4, self_loops=False, seed=1)
     pos = nx.layout.spring_layout(G, seed=10)
     remove_edges = []
@@ -37,7 +40,8 @@ def create_graph():
     for edge in G.edges:
         G.edges[edge[0], edge[1], 0]['length'] = int(distance(G.nodes[edge[0]], G.nodes[edge[1]]))
         # print(G.edges[edge[0], edge[1], 0]['length'])
-        G.edges[edge[0], edge[1], 0]['grade'] = grade(G.nodes[edge[0]], G.nodes[edge[1]], G.edges[edge[0], edge[1], 0]['length'])
+        G.edges[edge[0], edge[1], 0]['grade'] = grade(G.nodes[edge[0]], G.nodes[edge[1]],
+                                                      G.edges[edge[0], edge[1], 0]['length'])
         # print(G.edges[edge[0], edge[1], 0]['grade'])
 
     pkl.dump(G, open("test_graph.pkl", "wb"))
@@ -49,12 +53,42 @@ def create_graph():
 
 
 def distance(node1, node2):
+    """
+                       Calculates Euclidean distance between two nodes.
+
+                       Parameters:
+                       -----------
+                       node1: networkx node
+                           The first node.
+                       node2: networkx Node
+                           The second node.
+
+                       Returns:
+                       --------
+                           The euclidean distance between the nodes.
+           """
     dx = node1['x'] - node2['x']
     dy = node1['y'] - node2['y']
     return math.sqrt(dx * dx + dy * dy)
 
 
 def grade(node1, node2, length):
+    """
+                       Calculates grade between two nodes.
+
+                       Parameters:
+                       -----------
+                       node1: networkx Node
+                           The first node.
+                       node2: networkx Node
+                           The second node.
+                       length: Float
+                           The length between the two nodes.
+
+                       Returns:
+                       --------
+                           The grade between the nodes.
+           """
     return (node2['elevation'] - node1['elevation']) / length
 
 
