@@ -110,7 +110,7 @@ export default class RouteData extends Component {
             elevData.push(elev);
         }
 
-        console.log(elevData, testData.datasets[0].data);
+        // console.log(elevData, testData.datasets[0].data);
 
         testData.labels = label;
         testData.datasets[0].data = elevData;
@@ -118,6 +118,14 @@ export default class RouteData extends Component {
         finalDistance = total_Dist;
     };
 
+    /**
+        Renders the react components to the screen. In particular, the statistics component.
+
+	 	Returns
+	 	----------
+	 	The HTML formatted React components to be rendered
+
+     **/
     render() {
 
 
@@ -131,6 +139,8 @@ export default class RouteData extends Component {
 
 
         return (
+
+            // This makes it so that the statistics page only shows when there's a path drawn on screen
             <Card
                 body
                 style={finalDistance === 0 ?

@@ -38,11 +38,11 @@ class App extends Component {
 
         Arguments
         ----------
-        d: The HTTP Response from the backend
+        d: HTTP Response
+	 		The HTTP Response from the backend
 
      **/
 	updateData = (d) => {
-		console.log("update");
 		const resp = [];
 		resp.push(d);
 		this.setState({ data: resp });
@@ -60,7 +60,6 @@ class App extends Component {
 		viewport["transitionInterpolator"] = new FlyToInterpolator();
 
 		this.setState({ viewport: viewport });
-		console.log(this.state);
 
 		this.updateLoading();
 
@@ -73,7 +72,8 @@ class App extends Component {
 
         Arguments
         ----------
-        viewState: The updated viewport
+        viewState: Viewport
+	 		The updated viewport
 
      **/
 	_onViewStateChange({ viewState }) {
@@ -102,35 +102,35 @@ class App extends Component {
      **/
 	updateErrorMsg = (msg) => {
 		this.setState({ errorMsg: msg, showError: true });
-		// this.updateLoading()
-		console.log("click");
 	};
 
 	/**
         Toggles the loading screen.
      **/
 	updateLoading = () => {
-		console.log("updaing loading");
 		let bool = this.state.loading;
 		this.setState({ loading: !bool });
-		console.log(this.state)
 	};
 
 	/**
         Removes the error and hides the error dialog.
      **/
 	clearError = () => {
-		console.log("clear errors");
 		this.setState({ errorMsg: "No errors", showError: false });
 		this.updateLoading()
 	};
 
 	/**
-        Calculates the proper map zoom level based on the length of the path
+        Calculates the proper map zoom level based on the haversine formula for the path length
 
         Arguments
         ----------
-        path: The path to be displayed
+        path: [[long, lat]]
+	 		The path to be displayed
+
+	 	Returns
+	 	----------
+	 	The calculated zoom level.
 
      **/
 	calculateZoom = (path) => {
@@ -142,13 +142,13 @@ class App extends Component {
 		console.log("dist: " + dist);
 
 		if (dist <= 1500) {
-			return 14.5;
+			return 14;
 		}
 		if (dist <= 5000) {
-			return 13;
+			return 12;
 		}
 		if (dist <= 15000) {
-			return 12;
+			return 11.5;
 		}
 		if (dist <= 35000) {
 			return 11;
@@ -159,6 +159,25 @@ class App extends Component {
 		return 8;
 	};
 
+	/**
+        Calculates haversine formula for the great-circle distance between two points on the earth
+
+        Arguments
+        ----------
+        lat1: Float
+	 		Latitude of the first node.
+	 	lon1: Float
+	 		Longitude of the first node.
+	 	lat2: Float
+	 		Latitude of the second node.
+	 	long2: Float
+	 		Longitude of the second node.
+
+	 	Returns
+	 	----------
+	 	d: The haversine distance between the two points.
+
+     **/
 	haversine = (lat1, lon1, lat2, lon2) => {
 		let R = 6371e3; // metres
 		let φ1 = (lat1 * Math.PI) / 180;
@@ -176,6 +195,14 @@ class App extends Component {
 		return d;
 	};
 
+	/**
+        Renders the react components to the screen.
+
+	 	Returns
+	 	----------
+	 	The HTML formatted React components to be rendered
+
+     **/
 	render() {
 		return (
 			<div
