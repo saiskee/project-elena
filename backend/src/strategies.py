@@ -45,8 +45,7 @@ class StrategyBFS(RoutingStrategy):
         list of nodes that form the discovered path
         """
 
-        if self.method.startswith('vanilla'):
-            return self.vanilla_shortest_path(source, goal)
+        return self.vanilla_shortest_path(source, goal)
 
     def vanilla_shortest_path(self, source, goal, edge_weight='length'):
         """Gets the shortest path given by BFS algorithm.
@@ -223,6 +222,8 @@ class StrategyDijkstra(RoutingStrategy):
         max_path_length = shortest_path_length * (1 + self.limit)
         max_path = []
         length_allowance = max_path_length - shortest_path_length
+        if length_allowance < 15:
+            return shortest_path
 
         # Iterate through each pair of nodes and find a subpath that can maximize elevation within a path
         # length constraint
@@ -274,7 +275,8 @@ class StrategyDijkstra(RoutingStrategy):
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
-
+        if (self.limit < 0.05):
+            return shortest_path
         # calculate the smallest elevation path using elevation/grade
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)
         least_elevation_length = graph_utils.get_path_length(graph, least_elevation)
@@ -429,6 +431,8 @@ class StrategyAStar(RoutingStrategy):
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
+        if (self.limit < 0.05):
+            return shortest_path
         max_path = []
         length_allowance = max_path_length - shortest_path_length
 
@@ -481,6 +485,8 @@ class StrategyAStar(RoutingStrategy):
         shortest_path = self.vanilla_shortest_path(source, goal)
         shortest_path_length = graph_utils.get_path_length(graph, shortest_path)
         max_path_length = shortest_path_length * (1 + self.limit)
+        if (self.limit < 0.05):
+            return shortest_path
 
         # Find the least elevation path using A* and elevation/grade as the edge weight
         least_elevation = self.vanilla_shortest_path(source, goal, edge_weight=weight)

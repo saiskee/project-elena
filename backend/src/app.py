@@ -82,6 +82,7 @@ def route():
         start_node = get_node_from_address(graph, data['start'])
         dest_node = get_node_from_address(graph, data['dest'])
     except Exception as e:
+        print(e)
         return str(e), 501
 
     limit = float(data['limit'])/100
@@ -137,8 +138,6 @@ def get_route(graph, start_node, dest_node, algorithm='AStar', limit=0, goal='Mi
         context = Context(strategies.StrategyAStar(graph, limit, method))
         path = context.run_strategy_route(start_node, dest_node)
 
-    elif algorithm == 'Networkx Dijkstra':
-        path = nx.shortest_path(start_node, dest_node, weight='length')
 
     print(path)
     path, path_data = prep_path(graph, path)

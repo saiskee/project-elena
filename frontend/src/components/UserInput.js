@@ -50,7 +50,7 @@ export default class UserInput extends Component {
 				this.setState({ loading: false });
 			})
 			.catch((err) => {
-				console.log(err);
+				// console.log(err);
 				this.props.updateErrorMsg(err.toString())
 			});
 	};
