@@ -92,3 +92,7 @@ This chart is normalized compared to Dijkstra's runtime.
 It shows us how much better Dijkstra's Algorithm performed better than the A* Algorithm in terms of runtime. 
 We can see that Dijkstra's had faster runtimes to minimize the elevation using elevation change and grade 
 compared to A*. Maximizing the elevation took slightly longer compared to minimizing. 
+
+## Testing
+### Testing the frontend
+To run the test suite for the frontend, simply run `yarn test` in the `frontend/` directory.
