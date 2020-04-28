@@ -90,9 +90,15 @@ export default class UserInput extends Component {
 			body: JSON.stringify(this.state),
 		})
 			.then(async (res) => {
+				if (res.status !== 200){
+					let json = await res.json()
+					throw new Error(json.error)
+				}
+				else{
 				let data = await res.json();
 				this.props.updateData(data);
 				this.setState({ loading: false });
+				}
 			})
 			.catch((err) => {
 				console.log(err);
