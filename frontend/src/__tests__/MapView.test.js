@@ -2,7 +2,15 @@ import React from "react";
 import ReactDOM from "react-dom";
 import MapView from "./../components/MapView";
 
-describe("Testing RouteData.js", () => {
+/**
+        Test of MapView.js
+
+	 	Passing Criteria
+	 	----------
+ 		MapView.js is able to be rendered without crashing
+ **/
+
+describe("Testing MapView.js", () => {
 	it("renders without crashing", () => {
 		// DOM Target element
 		const div = document.createElement("div");

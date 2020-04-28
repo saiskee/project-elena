@@ -9,7 +9,7 @@ import webbrowser
 
 app = Flask(__name__)
 graphs = {}
-modes = [("drive", graphs), ("walk", graphs), ("bike", graphs)]
+modes = [("drive", graphs)]#, ("walk", graphs), ("bike", graphs)]
 
 
 def load_graph(method, graphs):
@@ -83,7 +83,7 @@ def route():
         dest_node = get_node_from_address(graph, data['dest'])
     except Exception as e:
         print(e)
-        return str(e), 501
+        return {'error': str(e)}, 501
 
     limit = float(data['limit'])/100
     return get_route(graph, start_node, dest_node, algorithm, limit=limit, goal=goal)

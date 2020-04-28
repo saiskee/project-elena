@@ -4,6 +4,14 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
 export default class ErrorModal extends Component {
+	/**
+        Renders the react components to the screen. In particular, the error modal.
+
+	 	Returns
+	 	----------
+	 	The HTML formatted React components to be rendered
+
+     **/
 	render() {
 		return (
 			<Modal show={this.props.showError}>

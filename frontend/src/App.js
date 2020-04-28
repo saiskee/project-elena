@@ -38,7 +38,8 @@ class App extends Component {
 
         Arguments
         ----------
-        d: The HTTP Response from the backend
+        d: HTTP Response
+	 		The HTTP Response from the backend
 
      **/
 	updateData = (d) => {
@@ -71,7 +72,8 @@ class App extends Component {
 
         Arguments
         ----------
-        viewState: The updated viewport
+        viewState: Viewport
+	 		The updated viewport
 
      **/
 	_onViewStateChange({ viewState }) {
@@ -119,11 +121,16 @@ class App extends Component {
 	};
 
 	/**
-        Calculates the proper map zoom level based on the length of the path
+        Calculates the proper map zoom level based on the haversine formula for the path length
 
         Arguments
         ----------
-        path: The path to be displayed
+        path: [[long, lat]]
+	 		The path to be displayed
+
+	 	Returns
+	 	----------
+	 	The calculated zoom level.
 
      **/
 	calculateZoom = (path) => {
@@ -152,6 +159,25 @@ class App extends Component {
 		return 8;
 	};
 
+	/**
+        Calculates haversine formula for the great-circle distance between two points on the earth
+
+        Arguments
+        ----------
+        lat1: Float
+	 		Latitude of the first node.
+	 	lon1: Float
+	 		Longitude of the first node.
+	 	lat2: Float
+	 		Latitude of the second node.
+	 	long2: Float
+	 		Longitude of the second node.
+
+	 	Returns
+	 	----------
+	 	d: The haversine distance between the two points.
+
+     **/
 	haversine = (lat1, lon1, lat2, lon2) => {
 		let R = 6371e3; // metres
 		let φ1 = (lat1 * Math.PI) / 180;
@@ -169,6 +195,14 @@ class App extends Component {
 		return d;
 	};
 
+	/**
+        Renders the react components to the screen.
+
+	 	Returns
+	 	----------
+	 	The HTML formatted React components to be rendered
+
+     **/
 	render() {
 		return (
 			<div
