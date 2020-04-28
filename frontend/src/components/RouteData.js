@@ -110,7 +110,7 @@ export default class RouteData extends Component {
             elevData.push(elev);
         }
 
-        console.log(elevData, testData.datasets[0].data);
+        // console.log(elevData, testData.datasets[0].data);
 
         testData.labels = label;
         testData.datasets[0].data = elevData;

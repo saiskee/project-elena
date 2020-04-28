@@ -42,7 +42,6 @@ class App extends Component {
 
      **/
 	updateData = (d) => {
-		console.log("update");
 		const resp = [];
 		resp.push(d);
 		this.setState({ data: resp });
@@ -60,7 +59,6 @@ class App extends Component {
 		viewport["transitionInterpolator"] = new FlyToInterpolator();
 
 		this.setState({ viewport: viewport });
-		console.log(this.state);
 
 		this.updateLoading();
 
@@ -102,25 +100,20 @@ class App extends Component {
      **/
 	updateErrorMsg = (msg) => {
 		this.setState({ errorMsg: msg, showError: true });
-		// this.updateLoading()
-		console.log("click");
 	};
 
 	/**
         Toggles the loading screen.
      **/
 	updateLoading = () => {
-		console.log("updaing loading");
 		let bool = this.state.loading;
 		this.setState({ loading: !bool });
-		console.log(this.state)
 	};
 
 	/**
         Removes the error and hides the error dialog.
      **/
 	clearError = () => {
-		console.log("clear errors");
 		this.setState({ errorMsg: "No errors", showError: false });
 		this.updateLoading()
 	};
@@ -142,13 +135,13 @@ class App extends Component {
 		console.log("dist: " + dist);
 
 		if (dist <= 1500) {
-			return 14.5;
+			return 14;
 		}
 		if (dist <= 5000) {
-			return 13;
+			return 12;
 		}
 		if (dist <= 15000) {
-			return 12;
+			return 11.5;
 		}
 		if (dist <= 35000) {
 			return 11;
