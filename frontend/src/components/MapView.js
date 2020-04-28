@@ -3,7 +3,7 @@ import DeckGL from "@deck.gl/react";
 import { PathLayer, IconLayer } from "@deck.gl/layers";
 import { StaticMap } from "react-map-gl";
 
-// Set your mapbox access token here
+// Mapbox access token here
 const MAPBOX_TOKEN =
 	"pk.eyJ1IjoibmlsYXkxODA4IiwiYSI6ImNrOG1iaXp0cjBkeTEzZm12N3l3ODJweWEifQ.TDhSzGcCsjt5CsVRljpcrw";
 
